@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ડેટા હબ</title>
+<style>
+:root{--bg:#fbf8f1;--card:#fff;--tx:#1d2a24;--mut:#5d6b64;--ac:#c2410c;--ok:#15803d;--bad:#b91c1c;--ln:#e8e1d2}
+@media(prefers-color-scheme:dark){:root{--bg:#fbf8f1}}
+*{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;padding:12px;background:var(--bg);color:var(--tx);font-family:'Noto Sans Gujarati','Shruti',system-ui,sans-serif;line-height:1.55}
+header{text-align:center;padding:6px 0 12px}
+header small{display:block;color:var(--ac);font-size:.95rem}
+h1{margin:2px 0 0;font-size:1.5rem}
+.c{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{margin:0 0 8px;font-size:1.15rem}
+.big{font-size:1.2rem;font-weight:700}
+.row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--ln)}
+.row:last-child{border:0}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.mut{color:var(--mut);font-size:.9rem}
+button,.btn{display:block;width:100%;font:inherit;font-weight:700;font-size:1.05rem;padding:14px;border-radius:12px;border:2px solid var(--ac);background:var(--ac);color:#fff;text-align:center;text-decoration:none;margin-top:8px}
+button.sec,.btn.sec{background:#fff;color:var(--ac)}
+button.sm{display:inline-block;width:auto;padding:6px 12px;margin:0;font-size:.9rem}
+.apps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.apps .btn{margin:0;padding:16px 8px}
+#pg{height:12px;background:var(--ln);border-radius:8px;overflow:hidden;margin-top:10px;display:none}
+#pg i{display:block;height:100%;width:0;background:var(--ok)}
+.mi{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed var(--ln)}
+input[type=date]{font:inherit;font-size:1.1rem;width:100%;padding:12px;border:2px solid var(--ln);border-radius:12px;margin-top:8px;background:#fff;color:var(--tx)}
+details summary{font-weight:700;cursor:pointer;padding:4px 0}
+</style>
+</head>
+<body>
+<header><small>ૐ શ્રી ગણેશાય નમઃ</small><h1>📊 ડેટા હબ</h1><div class="mut">ભાવકોપી એક જ વાર નાખો, બધી એપ વાપરે</div></header>
+
+<div class="c" id="st"><h2>📅 ડેટા સ્થિતિ</h2><div class="mut">લોડ થાય છે…</div></div>
+
+<div class="c">
+  <h2>⬆️ ભાવકોપી ઉમેરો</h2>
+  <div class="mut">ZIP અથવા CSV. ઘણી ફાઇલ એકસાથે પસંદ કરી શકાય (પહેલી વાર 100-100 ની બેચમાં નાખો). 500 થી વધુ થાય તો જૂના દિવસ આપોઆપ ડિલીટ થશે.</div>
+  <input type="file" id="f" accept=".zip,.csv" multiple hidden>
+  <button id="up">📁 ફાઇલ પસંદ કરો</button>
+  <div id="pg"><i></i></div>
+  <div id="msg" class="mut" style="margin-top:8px"></div>
+</div>
+
+<div class="c">
+  <h2>⬇️ ભાવકોપી ડાઉનલોડ</h2>
+  <div id="nw" class="mut"></div>
+  <input type="date" id="dd">
+  <a id="dl" class="btn" target="_blank" rel="noopener" href="#">⬇️ આ તારીખની ZIP ડાઉનલોડ</a>
+  <button class="sec" id="cp">🔗 લિંક કોપી કરો</button>
+  <div class="mut" style="margin-top:8px">ભાવકોપી સાંજે મોડી મૂકાય છે. ફોનમાં ન ખૂલે તો Chrome માં લિંક પેસ્ટ કરો. ડાઉનલોડ પછી ઉપરથી "ફાઇલ પસંદ કરો".</div>
+</div>
+
+<div class="c" id="miss" style="display:none"><h2>⚠️ ખૂટતા દિવસ</h2><div class="mut">શનિ-રવિ ગણ્યા નથી. રજા હોય તો "રજા" દબાવો.</div><div id="ml"></div></div>
+
+<div class="c"><h2>🧩 એપ ખોલો</h2><div class="apps" id="apps"></div></div>
+
+<div class="c">
+  <details><summary>🏖️ રજાઓ (<span id="hn">0</span>)</summary><div id="hl" class="mut"></div></details>
+  <button class="sec" id="clr" style="border-color:var(--bad);color:var(--bad)">🗑️ બધો ડેટા ખાલી કરો</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="db.js"></script>
+<script>
+/* એપની ફાઇલના નામ — તમારા રિપોમાં જે નામ રાખો તે અહીં લખો */
+const APPS=[
+ {n:'📈 NSE સ્કેનર',u:'scanner.html'},
+ {n:'🛡️ NSE Scanner v6.4',u:'nsescanner.html'},
+ {n:'🔄 સ્વિંગ સ્કેનર',u:'swing.html'},
+ {n:'🎯 NextDay Market',u:'Nextdaysurkit.html'},
+ {n:'🧭 ખરીદ/Exit મદદ',u:'helpbox.html'}
+];
+const SER=new Set(['EQ','BE','BZ','SM','ST','SO']);
+const $=id=>document.getElementById(id);
+const MON={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
+const p2=n=>String(n).padStart(2,'0');
+
+function nd(s){
+ s=(s||'').trim().replace(/"/g,'');let m;
+ if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))return m[1]+'-'+p2(m[2])+'-'+p2(m[3]);
+ if(m=s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/)){const x=MON[m[2].toUpperCase()];return x?m[3]+'-'+p2(x)+'-'+p2(m[1]):null}
+ if(m=s.match(/^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/))return m[3]+'-'+p2(m[2])+'-'+p2(m[1]);
+ if(m=s.match(/(20\d{2})(\d{2})(\d{2})/))return m[1]+'-'+m[2]+'-'+m[3];
+ if(m=s.match(/(\d{2})([A-Za-z]{3})(20\d{2})/)){const x=MON[m[2].toUpperCase()];return x?m[3]+'-'+p2(x)+'-'+m[1]:null}
+ return null;
+}
+function parse(txt,fname){
+ const L=txt.split(/\r?\n/);if(L.length<2)return null;
+ const H=L[0].split(',').map(x=>x.trim().replace(/"/g,'').toUpperCase());
+ const ix=(...n)=>{for(const k of n){const i=H.indexOf(k);if(i>=0)return i}return -1};
+ const iS=ix('TCKRSYMB','SYMBOL'),iR=ix('SCTYSRS','SERIES'),iO=ix('OPNPRIC','OPEN'),iH=ix('HGHPRIC','HIGH'),
+  iL=ix('LWPRIC','LOW'),iC=ix('CLSPRIC','CLOSE'),iP=ix('PRVSCLSGPRIC','PREVCLOSE'),
+  iV=ix('TTLTRADGVOL','TOTTRDQTY'),iT=ix('TTLTRFVAL','TOTTRDVAL'),iI=ix('ISIN'),iD=ix('TRADDT','TIMESTAMP','BIZDT');
+ if(iS<0||iC<0||iO<0||iH<0||iL<0)return null;
+ const rows=[];let date=null;
+ for(let i=1;i<L.length;i++){
+  if(!L[i])continue;
+  const w=L[i].split(',');if(w.length<6)continue;
+  const se=iR>=0?w[iR].trim().replace(/"/g,'').toUpperCase():'EQ';
+  if(!SER.has(se))continue;
+  const c=+w[iC],o=+w[iO],h=+w[iH],l=+w[iL];
+  if(!(c>0&&o>0&&h>0&&l>0))continue;
+  if(!date&&iD>=0)date=nd(w[iD]);
+  rows.push([w[iS].trim().replace(/"/g,'').toUpperCase(),se,o,h,l,c,iP>=0?+w[iP]||0:0,iV>=0?+w[iV]||0:0,iT>=0?+w[iT]||0:0,iI>=0?w[iI].trim().replace(/"/g,''):'']);
+ }
+ date=date||nd(fname);
+ return date&&rows.length?{d:date,rows}:null;
+}
+
+async function render(){
+ const s=await MarketDB.status(),F=MarketDB.fmt,t=MarketDB.todayIST();
+ let h='<h2>📅 ડેટા સ્થિતિ</h2>';
+ if(!s.count)h+='<div class="mut">હજી કોઈ ડેટા નથી. નીચેથી ભાવકોપી નાખો.</div>';
+ else{
+  h+='<div class="big">'+F(s.first)+' → '+F(s.last)+'</div>'
+   +'<div class="row"><span>કુલ દિવસ</span><b>'+s.count+' / '+MarketDB.MAX+'</b></div>'
+   +'<div class="row"><span>ખૂટતા દિવસ</span><b class="'+(s.missing.length?'bad':'ok')+'">'+(s.missing.length?s.missing.length:'0 ✅')+'</b></div>'
+   +'<div class="row"><span>આજ (ભારતીય સમય)</span><b>'+F(t)+'</b></div>';
+ }
+ $('st').innerHTML=h;
+ if(s.last){
+  const nx=addWd(s.last);
+  if(!$('dd').value)$('dd').value=nx;
+  let n=0,c=nx;while(c<=t){n++;c=addWd(c)}
+  setDl();
+ $('nw').innerHTML=n?'🆕 છેલ્લા ડેટા પછી <b>'+n+'</b> કામકાજ દિવસ બાકી (રજા હોય તો ઓછા).':'✅ આજ સુધીનો ડેટા છે.';
+ }else{if(!$('dd').value)$('dd').value=t;setDl();$('nw').textContent='';}
+ $('miss').style.display=s.missing.length?'block':'none';
+ $('ml').innerHTML=s.missing.map(d=>'<div class="mi"><b>'+F(d)+'</b><button class="sm sec" data-h="'+d+'">રજા</button></div>').join('');
+ $('hn').textContent=s.holidays.length;
+ $('hl').innerHTML=s.holidays.length?s.holidays.map(d=>'<div class="mi"><span>'+F(d)+'</span><button class="sm sec" data-r="'+d+'">કાઢો</button></div>').join(''):'કોઈ નથી';
+}
+
+const bUrl=d=>'https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_'+d.replace(/-/g,'')+'_F_0000.csv.zip';
+function addWd(d){const x=new Date(Date.UTC(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10)));do{x.setUTCDate(x.getUTCDate()+1)}while(x.getUTCDay()===0||x.getUTCDay()===6);return x.toISOString().slice(0,10)}
+const setDl=()=>{const d=$('dd').value;$('dl').href=d?bUrl(d):'#'};
+$('dd').onchange=setDl;
+$('cp').onclick=async()=>{const d=$('dd').value;if(!d)return;try{await navigator.clipboard.writeText(bUrl(d));$('msg').textContent='🔗 લિંક કોપી થઈ'}catch(e){prompt('લિંક કોપી કરો',bUrl(d))}};
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+$('apps').innerHTML=APPS.map(a=>'<a class="btn sec" href="'+a.u+'">'+a.n+'</a>').join('');
+$('up').onclick=()=>$('f').click();
+$('f').onchange=async e=>{
+ const fs=[...e.target.files];e.target.value='';if(!fs.length)return;
+ const pg=$('pg'),bar=pg.firstElementChild,msg=$('msg');pg.style.display='block';
+ let ok=0,bad=[],n=0;
+ const csvs=[];
+ try{
+  for(const f of fs){
+   n++;bar.style.width=(n/fs.length*100)+'%';msg.textContent='ફાઇલ '+n+' / '+fs.length+' વંચાય છે…';
+   try{
+    if(/\.zip$/i.test(f.name)){
+     const z=await JSZip.loadAsync(f);
+     for(const k of Object.keys(z.files)){
+      if(z.files[k].dir||!/\.csv$/i.test(k))continue;
+      const d=parse(await z.files[k].async('string'),k);
+      if(d){await MarketDB.putDay(d);ok++}else bad.push(k);
+     }
+    }else{
+     const d=parse(await f.text(),f.name);
+     if(d){await MarketDB.putDay(d);ok++}else bad.push(f.name);
+    }
+   }catch(err){bad.push(f.name+' ('+err.message+')')}
+   await new Promise(r=>setTimeout(r));
+  }
+  const cut=await MarketDB.trim();
+  msg.innerHTML='✅ <b>'+ok+'</b> દિવસ સેવ થયા.'+(cut?' જૂના '+cut+' દિવસ ડિલીટ થયા.':'')+(bad.length?'<br><span class="bad">❌ વંચાઈ નહીં ('+bad.length+'): '+bad.slice(0,5).join(', ')+(bad.length>5?'…':'')+'</span>':'');
+ }catch(err){msg.innerHTML='<span class="bad">❌ '+err.message+' — જગ્યા ભરાઈ હોઈ શકે.</span>'}
+ pg.style.display='none';render();
+};
+document.body.addEventListener('click',async e=>{
+ const h=e.target.dataset&&e.target.dataset.h,r=e.target.dataset&&e.target.dataset.r;
+ if(h){await MarketDB.addHoliday(h);render()}
+ if(r){await MarketDB.removeHoliday(r);render()}
+});
+$('clr').onclick=async()=>{
+ if(confirm('બધો ભાવકોપી ડેટા ડિલીટ કરવો? (રજાની યાદી રહેશે)')){await MarketDB.clear();render()}
+};
+render();
+</script>
+</body>
+</html>
