@@ -28,6 +28,7 @@ button.sm{display:inline-block;width:auto;padding:6px 12px;margin:0;font-size:.9
 #pg i{display:block;height:100%;width:0;background:var(--ok)}
 .mi{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px dashed var(--ln)}
 input[type=date]{font:inherit;font-size:1.1rem;width:100%;padding:12px;border:2px solid var(--ln);border-radius:12px;margin-top:8px;background:#fff;color:var(--tx)}
+textarea{font:inherit;font-size:1.05rem;width:100%;padding:10px;border:2px solid var(--ln);border-radius:12px;background:#fff;color:var(--tx)}
 details summary{font-weight:700;cursor:pointer;padding:4px 0}
 </style>
 </head>
@@ -59,7 +60,11 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0}
 <div class="c"><h2>🧩 એપ ખોલો</h2><div class="apps" id="apps"></div></div>
 
 <div class="c">
-  <details><summary>🏖️ રજાઓ (<span id="hn">0</span>)</summary><div id="hl" class="mut"></div></details>
+  <details><summary>🏖️ રજાઓ (<span id="hn">0</span>)</summary><div class="mut" style="margin:6px 0">ઘણી રજા એકસાથે નાખો (એક લાઇનમાં એક, અથવા અલ્પવિરામથી). ફોર્મેટ: 26-02-2025 અથવા 2025-02-26</div>
+  <textarea id="bh" rows="4" placeholder="26-02-2025&#10;14-03-2025&#10;31-03-2025"></textarea>
+  <button class="sec" id="bhb">➕ બધી રજા ઉમેરો</button>
+  <div id="bhm" class="mut"></div>
+  <div id="hl" class="mut"></div></details>
   <button class="sec" id="clr" style="border-color:var(--bad);color:var(--bad)">🗑️ બધો ડેટા ખાલી કરો</button>
 </div>
 
@@ -176,6 +181,14 @@ document.body.addEventListener('click',async e=>{
  if(h){await MarketDB.addHoliday(h);render()}
  if(r){await MarketDB.removeHoliday(r);render()}
 });
+$('bhb').onclick=async()=>{
+ const t=$('bh').value.split(/[\s,;]+/).filter(Boolean),ok=[],bad=[];
+ for(const x of t){const d=nd(x);if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d))ok.push(d);else bad.push(x)}
+ for(const d of ok)await MarketDB.addHoliday(d);
+ $('bhm').innerHTML='✅ '+ok.length+' રજા ઉમેરાઈ.'+(bad.length?' <span class="bad">❌ સમજાઈ નહીં: '+bad.slice(0,5).join(', ')+'</span>':'');
+ if(ok.length)$('bh').value='';
+ render();
+};
 $('clr').onclick=async()=>{
  if(confirm('બધો ભાવકોપી ડેટા ડિલીટ કરવો? (રજાની યાદી રહેશે)')){await MarketDB.clear();render()}
 };
