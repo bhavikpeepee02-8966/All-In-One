@@ -78,7 +78,7 @@ textarea{width:100%;padding:8px;font:14px inherit;border:1.5px solid #93c5fd;bor
 </section>
 
 <section id="p-data" style="display:none">
-<div class="c"><h2>📂 ડેટા</h2><div class="info">ભાવકોપી હવે <b>ડેટા હબ</b> માં નાખો. આ એપ ત્યાંથી છેલ્લા <span id="ldn">250</span> દિવસ આપોઆપ વાંચે છે.</div>
+<div class="c"><h2>📂 ડેટા</h2><div class="info">ભાવકોપી હવે <b>ડેટા હબ</b> માં નાખો. આ એપ ત્યાંથી છેલ્લા <span id="ldn">500</span> દિવસ આપોઆપ વાંચે છે.</div>
 <a class="b" href="index.html" style="text-align:center;text-decoration:none">📊 ડેટા હબ ખોલો</a></div>
 <div class="c"><h2>📊 Database</h2>
 <div class="st"><span>કુલ દિવસ</span><b id="sD">0</b></div>
@@ -113,7 +113,7 @@ const cp=async t=>{try{await navigator.clipboard.writeText(t);toast('✅ કો�
 const ld=m=>{let e=$('ldr');if(m===null){e&&e.remove();return}if(!e){e=document.createElement('div');e.id='ldr';e.style.cssText='position:fixed;top:0;left:0;right:0;z-index:20;background:#0f3d75;color:#fff;text-align:center;padding:10px;font-weight:700;font-size:14px';document.body.appendChild(e)}e.textContent=m};
 const tick=()=>new Promise(r=>setTimeout(r,0));
 
-const LOAD_DAYS=250; /* હબમાંથી છેલ્લા કેટલા દિવસ લોડ કરવા (500 સુધી વધારી શકાય) */
+const LOAD_DAYS=500; /* હબમાંથી છેલ્લા કેટલા દિવસ લોડ કરવા */
 
 async function loadAll(){
  const ds=(await MarketDB.dates()).slice(-LOAD_DAYS);
