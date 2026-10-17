@@ -666,10 +666,11 @@ const CF=[
 {n:'🏆 52-વીક હાઈ',pro:'wk52'}
 ];
 
-let P=Object.assign({},CF[0]);
+const DEF_CF=3; /* ડિફોલ્ટ સેટઅપ: 🔄 પુલબેક EMA20 */
+let P=Object.assign({},CF[DEF_CF]);
 try{
   const k=localStorage.getItem('cf');
-  if(k!==null)P=Object.assign({},CF[+k]||CF[0]);
+  if(k!==null)P=Object.assign({},CF[+k]||CF[DEF_CF]);
 }catch(e){}
 
 function downloadTxt(){
