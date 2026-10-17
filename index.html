@@ -63,6 +63,7 @@ details summary{font-weight:700;cursor:pointer;padding:4px 0}
   <details><summary>🏖️ રજાઓ (<span id="hn">0</span>)</summary><div class="mut" style="margin:6px 0">ઘણી રજા એકસાથે નાખો (એક લાઇનમાં એક, અથવા અલ્પવિરામથી). ફોર્મેટ: 26-02-2025 અથવા 2025-02-26</div>
   <textarea id="bh" rows="4" placeholder="26-02-2025&#10;14-03-2025&#10;31-03-2025"></textarea>
   <button class="sec" id="bhb">➕ બધી રજા ઉમેરો</button>
+  <button class="sec" id="nseh">📅 NSE રજાઓ ઉમેરો (સ્કેનર એપની યાદી)</button>
   <div id="bhm" class="mut"></div>
   <div id="hl" class="mut"></div></details>
   <button class="sec" id="clr" style="border-color:var(--bad);color:var(--bad)">🗑️ બધો ડેટા ખાલી કરો</button>
@@ -79,7 +80,7 @@ const APPS=[
  {n:'🎯 NextDay Market',u:'Nextdaysurkit.html'},
  {n:'🧭 ખરીદ/Exit મદદ',u:'helpbox.html'}
 ];
-const SER=new Set(['EQ','BE','BZ','SM','ST','SO']);
+const SER=new Set(['EQ','BE','BZ','SM','ST','SO','MT']);
 const $=id=>document.getElementById(id);
 const MON={JAN:1,FEB:2,MAR:3,APR:4,MAY:5,JUN:6,JUL:7,AUG:8,SEP:9,OCT:10,NOV:11,DEC:12};
 const p2=n=>String(n).padStart(2,'0');
@@ -191,6 +192,13 @@ $('bhb').onclick=async()=>{
  $('bhm').innerHTML='✅ '+ok.length+' રજા ઉમેરાઈ.'+(bad.length?' <span class="bad">❌ સમજાઈ નહીં: '+bad.slice(0,5).join(', ')+'</span>':'');
  if(ok.length)$('bh').value='';
  render();
+};
+const NSE_H=['2024-01-22', '2024-01-26', '2024-03-08', '2024-03-25', '2024-03-29', '2024-04-11', '2024-04-14', '2024-04-17', '2024-05-01', '2024-05-20', '2024-06-17', '2024-07-17', '2024-08-15', '2024-10-02', '2024-11-01', '2024-11-15', '2024-12-25', '2025-01-26', '2025-02-26', '2025-03-14', '2025-03-31', '2025-04-10', '2025-04-14', '2025-04-18', '2025-05-01', '2025-08-15', '2025-08-27', '2025-10-02', '2025-10-21', '2025-10-22', '2025-11-05', '2025-12-25', '2026-01-15', '2026-01-26', '2026-03-03', '2026-03-26', '2026-03-31', '2026-04-03', '2026-04-14', '2026-05-01', '2026-05-28', '2026-06-26', '2026-09-14', '2026-10-02', '2026-10-20', '2026-11-10', '2026-11-24', '2026-12-25'];
+$('nseh').onclick=async()=>{
+ if(!confirm('સ્કેનર એપની NSE રજાઓની યાદી ('+NSE_H.length+' તારીખ, શનિ-રવિ સિવાય) ઉમેરવી?'))return;
+ let n=0;const have=new Set(await MarketDB.holidays());
+ for(const d of NSE_H){const g=new Date(d+'T00:00:00Z').getUTCDay();if(g===0||g===6||have.has(d))continue;await MarketDB.addHoliday(d);n++}
+ $('bhm').innerHTML='✅ '+n+' રજા ઉમેરાઈ.';render();
 };
 $('clr').onclick=async()=>{
  if(confirm('બધો ભાવકોપી ડેટા ડિલીટ કરવો? (રજાની યાદી રહેશે)')){await MarketDB.clear();render()}

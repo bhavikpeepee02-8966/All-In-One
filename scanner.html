@@ -1,0 +1,2201 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<meta name="theme-color" content="#059669">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>NSE BhavCopy સ્કેનર</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+html,body{margin:0;padding:0;overflow-x:hidden}
+body{padding:10px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans Gujarati","Noto Sans",Roboto,Arial,sans-serif;
+font-size:17px;line-height:1.7;background:#eef2f7;color:#1e293b;-webkit-text-size-adjust:100%;word-wrap:break-word}
+h1{font-size:24px;margin:6px 0 4px;color:#0f172a}
+h2{font-size:20px;margin:12px 0 8px;color:#047857}
+.sub{color:#64748b;font-size:14px;margin-bottom:10px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;
+border:1px solid #e2e8f0;box-shadow:0 2px 6px rgba(15,23,42,.05)}
+.btn{display:block;width:100%;padding:15px;margin:8px 0;font-size:18px;font-weight:bold;
+border:none;border-radius:10px;background:#059669;color:#fff;cursor:pointer;
+font-family:inherit;letter-spacing:.3px;box-shadow:0 2px 4px rgba(5,150,105,.25);
+transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn.danger{background:#dc2626;box-shadow:0 2px 4px rgba(220,38,38,.25)}
+.btn.warn{background:#f59e0b;color:#fff;box-shadow:0 2px 4px rgba(245,158,11,.25)}
+.btn.info{background:#2563eb;box-shadow:0 2px 4px rgba(37,99,235,.25)}
+.btn.quality{background:linear-gradient(135deg,#7c3aed,#a855f7);box-shadow:0 3px 8px rgba(124,58,237,.35)}
+.btn.dark{background:#0f172a;box-shadow:0 2px 4px rgba(15,23,42,.25)}
+.btn:disabled{opacity:.55}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn{flex:1;margin:8px 0}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{flex:1;min-width:45%;background:#f8fafc;border-radius:10px;padding:12px 8px;
+text-align:center;border:1px solid #e2e8f0}
+.stat b{display:block;font-size:26px;color:#047857;margin-bottom:2px}
+.stat.warn b{color:#d97706}
+.stat span{font-size:13px;color:#64748b}
+.missing-day{display:inline-block;background:#fef3c7;color:#92400e;padding:5px 10px;
+border-radius:6px;margin:3px;font-size:14px;font-weight:bold;border:1px solid #fbbf24}
+.loaded-day{display:inline-block;background:#d1fae5;color:#065f46;padding:4px 10px;
+border-radius:6px;margin:3px;font-size:13px;border:1px solid #6ee7b7}
+.result-row{background:#f8fafc;border-radius:12px;padding:14px;margin:10px 0;
+border-left:5px solid #059669;border:1px solid #e2e8f0}
+.result-row a.sym-link{font-size:22px;font-weight:bold;color:#1d4ed8;
+text-decoration:none;display:inline-block;padding:2px 0}
+.result-row a.sym-link:active{color:#7c3aed}
+.pattern-tag{display:inline-block;background:#1e40af;color:#fff;padding:3px 10px;
+border-radius:6px;font-size:13px;margin:4px 4px 4px 0;font-weight:600}
+.pattern-tag.g{background:#059669}
+.pattern-tag.o{background:#ea580c}
+.pattern-tag.p{background:#7c3aed}
+.data-line{display:flex;justify-content:space-between;align-items:center;
+padding:6px 0;font-size:15px;border-bottom:1px dashed #e2e8f0;gap:8px}
+.data-line:last-child{border-bottom:none}
+.data-line .lbl{color:#64748b;font-weight:600;flex:0 0 auto}
+.data-line .val{font-weight:bold;color:#1e293b;font-family:monospace;font-size:15px;text-align:right}
+.data-line .val.green{color:#047857}
+.data-line .val.red{color:#dc2626}
+.data-line .val.blue{color:#1d4ed8}
+.vol-status{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:14px;font-weight:bold;text-align:center}
+.vol-status.ok{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.vol-status.need{background:#fef3c7;color:#92400e;border:1px solid #fbbf24}
+input[type=file]{display:none}
+input[type=text],input[type=password],input[type=number],select{width:100%;padding:12px;font-size:16px;
+border-radius:8px;border:1px solid #cbd5e1;background:#fff;color:#1e293b;
+margin:4px 0;font-family:inherit}
+input[type=checkbox]{width:auto;margin:0;transform:scale(1.4);accent-color:#059669}
+label{display:block;font-size:14px;color:#475569;margin-top:10px;font-weight:600}
+.progress{background:#e2e8f0;border-radius:8px;overflow:hidden;height:30px;
+margin:10px 0;display:none}
+.progress.show{display:block}
+.progress-bar{height:100%;background:linear-gradient(90deg,#059669,#10b981);
+transition:width .3s;text-align:center;line-height:30px;font-size:14px;
+font-weight:bold;color:#fff;padding:0 8px;white-space:nowrap}
+a{color:#1d4ed8;word-break:break-all}
+.log{background:#0f172a;border-radius:8px;padding:10px;font-size:12px;
+max-height:220px;overflow-y:auto;font-family:monospace;color:#cbd5e1;
+border:1px solid #334155;white-space:pre-wrap;word-break:break-word}
+details{margin:8px 0}
+summary{cursor:pointer;font-weight:bold;padding:10px;font-size:16px;color:#047857;
+background:#f0fdf4;border-radius:8px;border:1px solid #bbf7d0;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+ ";font-size:18px}
+details[open]>summary::before{content:"- "}
+.banner{background:#fef3c7;color:#92400e;padding:14px;border-radius:12px;
+margin-bottom:12px;font-size:16px;font-weight:bold;display:none;
+border-left:6px solid #f59e0b;border:1px solid #fbbf24;line-height:1.6}
+.file-status{background:#eff6ff;border-radius:8px;padding:10px;margin:8px 0;
+font-size:14px;color:#1d4ed8;display:none;border:1px solid #bfdbfe;font-weight:600}
+.file-status.show{display:block}
+.empty{text-align:center;color:#94a3b8;padding:24px;font-size:16px}
+.note{font-size:13px;color:#64748b;margin-top:8px;line-height:1.6}
+.dist-badge{display:inline-block;padding:2px 8px;border-radius:6px;
+  font-size:12px;font-weight:bold;margin-left:6px;vertical-align:middle}
+.dist-badge.fresh{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.dist-badge.watch{background:#fef3c7;color:#92400e;border:1px solid #fbbf24}
+.dist-badge.missed{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.range-box{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:14px;
+  font-weight:bold;text-align:center}
+.range-box.fresh{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.range-box.watch{background:#fef3c7;color:#92400e;border:1px solid #fbbf24}
+.range-box.missed{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+
+/* ═══ ENHANCED ENTRY GUIDE ═══ */
+.entry-guide{margin-top:12px;padding:0;border-radius:12px;overflow:hidden;border:2px solid #059669}
+.eg-header{background:linear-gradient(135deg,#059669,#10b981);color:#fff;
+  padding:12px;font-weight:bold;font-size:16px;text-align:center}
+.eg-body{padding:12px;background:#f0fdf4}
+.eg-box{padding:10px 12px;margin:8px 0;border-radius:10px;background:#fff;
+  border:1px solid #e2e8f0;font-size:15px;line-height:1.6}
+.eg-box.time{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.eg-box.buy{background:#d1fae5;border-color:#6ee7b7;color:#065f46}
+.eg-box.wait{background:#fef3c7;border-color:#fbbf24;color:#92400e}
+.eg-box.skip{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.eg-box.sl{background:#fef2f2;border-color:#fca5a5;color:#991b1b}
+.eg-box.target{background:#ecfdf5;border-color:#6ee7b7;color:#065f46}
+.eg-label{font-weight:bold;display:block;margin-bottom:4px;font-size:13px;opacity:.85}
+.eg-price{font-family:monospace;font-size:17px;font-weight:bold;background:rgba(255,255,255,.6);
+  padding:2px 8px;border-radius:5px;display:inline-block;margin:2px 2px 2px 0}
+.eg-note{font-size:12px;color:#64748b;margin-top:8px;font-style:italic;
+  padding:8px;background:#f8fafc;border-radius:6px;line-height:1.5}
+.eg-step-num{display:inline-block;width:22px;height:22px;line-height:22px;
+  text-align:center;background:#059669;color:#fff;border-radius:50%;
+  font-size:12px;font-weight:bold;margin-right:6px}
+
+/* ═══ END ENTRY GUIDE ═══ */
+
+.signal-badge{padding:8px 12px;border-radius:8px;font-weight:bold;
+text-align:center;margin-bottom:10px;font-size:14px;color:#fff}
+.signal-badge.green{background:linear-gradient(135deg,#059669,#10b981)}
+.signal-badge.yellow{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+.signal-badge.red{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.result-row.sig-green{background:#f0fdf4;border-left-color:#059669;border:2px solid #059669}
+.result-row.sig-yellow{background:#fffbeb;border-left-color:#f59e0b;border:2px solid #f59e0b}
+.result-row.sig-red{background:#fef2f2;border-left-color:#dc2626;border:2px solid #dc2626}
+.toggle-box{display:flex;align-items:center;gap:10px;margin-top:12px;
+background:#f0fdf4;padding:12px;border-radius:8px;font-size:14px;
+font-weight:bold;color:#047857;border:1px solid #bbf7d0}
+.card-actions{display:flex;gap:8px;margin-top:10px}
+.card-actions button{flex:1}
+.warn-line{margin:6px 0;padding:8px 10px;border-radius:8px;font-size:14px;font-weight:bold}
+.warn-line.red{background:#fef2f2;color:#991b1b;border:1px solid #fca5a5}
+.warn-line.amber{background:#fffbeb;color:#92400e;border:1px solid #fbbf24}
+.warn-line.green{background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0}
+.bt-stat{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.bt-stat>div{flex:1;min-width:30%;background:#f8fafc;border-radius:8px;padding:8px;
+text-align:center;border:1px solid #e2e8f0;font-size:12px;color:#64748b}
+.bt-stat>div b{display:block;font-size:18px;color:#0f172a;margin-bottom:2px}
+.bt-row{padding:10px;margin:8px 0;border-radius:8px;border:1px solid #e2e8f0;
+background:#f8fafc;font-size:14px;line-height:1.6}
+.bt-row.win{background:#f0fdf4;border-color:#6ee7b7;border-left:4px solid #059669}
+.bt-row.loss{background:#fef2f2;border-color:#fca5a5;border-left:4px solid #dc2626}
+.bt-row.miss{background:#fffbeb;border-color:#fbbf24;border-left:4px solid #f59e0b;opacity:.85}
+.bt-row.noTrig{background:#f1f5f9;border-color:#cbd5e1;border-left:4px solid #94a3b8;opacity:.75}
+.pat-filter{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pat-filter label{display:flex;align-items:center;gap:6px;background:#f8fafc;padding:8px 10px;
+border-radius:8px;border:1px solid #cbd5e1;font-size:13px;color:#1e293b;margin:0;flex:1;
+min-width:45%;cursor:pointer;font-weight:600}
+.pat-filter label input{transform:scale(1.2)}
+.pat-filter label.on{background:#d1fae5;border-color:#6ee7b7;color:#065f46}
+@media (max-width:380px){
+  body{font-size:15px;padding:8px}
+  h1{font-size:20px}
+  h2{font-size:17px}
+  .stat b{font-size:22px}
+  .btn{font-size:16px;padding:14px}
+  .data-line{font-size:13px}
+  .result-row a.sym-link{font-size:19px}
+  .eg-price{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<div class="banner" id="reminderBanner"></div>
+<div class="banner" id="indexBanner" style="background:#fef3c7;color:#92400e;border-left-color:#f59e0b;border-color:#fbbf24"></div>
+
+<h1>NSE BhavCopy સ્કેનર</h1>
+<div class="sub">Bull Flag Swing Strategy · ઓફલાઇન · મોબાઇલ</div>
+
+<div class="card">
+  <div class="stats">
+    <div class="stat"><b id="statDays">0</b><span>કુલ દિવસો</span></div>
+    <div class="stat warn"><b id="statMissing">0</b><span>ખૂટતા દિવસો</span></div>
+    <div class="stat"><b id="statStocks">0</b><span>કુલ રેકોર્ડ</span></div>
+    <div class="stat" style="min-width:100%"><b id="statRange" style="font-size:14px">—</b>
+      <span>તારીખ રેન્જ</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Stock Filter</h2>
+  <input type="file" id="indexInput" accept=".csv">
+  <button class="btn quality" id="qualityBtn">Quality Stocks Load કરો</button>
+  <button class="btn" id="indexUploadBtn">Nifty CSV પસંદ કરો</button>
+  <div id="indexStatus" style="margin-top:10px;font-size:13px;line-height:1.7;padding:8px;background:#f8fafc;border-radius:8px">—</div>
+  <div class="note" style="margin-top:10px">
+    <b>NSE થી download કરો:</b><br>
+    <a href="https://nsearchives.nseindia.com/content/indices/ind_nifty500list.csv" target="_blank">Nifty 500 CSV</a><br>
+    <a href="https://nsearchives.nseindia.com/content/indices/ind_nifty200list.csv" target="_blank">Nifty 200 CSV</a><br>
+    <a href="https://nsearchives.nseindia.com/content/indices/ind_niftytotalmarket_list.csv" target="_blank">Nifty Total Market</a>
+  </div>
+  <button class="btn danger" id="indexClearBtn" style="margin-top:8px">Filter કાઢો</button>
+</div>
+
+<div class="card">
+  <h2>📂 BhavCopy ડેટા</h2>
+  <div class="note" style="margin-bottom:8px">ભાવકોપી હવે <b>ડેટા હબ</b> માં નાખો. આ એપ ત્યાંથી છેલ્લા 70 દિવસ આપોઆપ વાંચે છે.</div>
+  <a class="btn" href="index.html" style="display:block;text-align:center;text-decoration:none">📊 ડેટા હબ ખોલો</a>
+  <button class="btn warn" id="hubReload">🔄 હબમાંથી ડેટા ફરી લોડ</button>
+</div>
+
+<div class="card">
+  <h2>આજની BhavCopy</h2>
+  <div style="font-size:14px;margin-bottom:8px">છેલ્લો બજાર દિવસ: <b id="todayDate" style="color:#047857">—</b></div>
+  <div id="todayHint" class="note" style="display:none;color:#d97706;font-weight:bold"></div>
+  <a id="bhavLink" href="#" target="_blank" style="font-size:12px">—</a>
+</div>
+
+<div class="card">
+  <h2>પેટર્ન સ્કેન</h2>
+  <button class="btn info" id="scanBtn">🔍 પેટર્ન સ્કેન કરો</button>
+
+  <div style="margin-top:12px;font-weight:bold;color:#047857;font-size:14px">Pattern Filter (Bull Flag recommended)</div>
+  <div class="pat-filter" id="scanPatternFilter">
+    <label class="on"><input type="checkbox" data-pat="flag" checked> ✅ બુલ ફ્લેગ</label>
+    <label><input type="checkbox" data-pat="20d"> 20D બ્રેકઆઉટ</label>
+    <label><input type="checkbox" data-pat="triangle"> એસેન્ડિંગ ટ્રાયેંગલ</label>
+    <label><input type="checkbox" data-pat="htf"> હાઈ ટાઈટ ફ્લેગ</label>
+  </div>
+
+  <label class="toggle-box">
+    <input type="checkbox" id="volTrendToggle" checked>
+    Volume 3 દિવસ ઘટતું નહીં + થોડું વધતું
+  </label>
+  <label class="toggle-box">
+    <input type="checkbox" id="onlyGreenToggle">
+    ફક્ત Green cards બતાવો
+  </label>
+  <button class="btn info" id="exportMspBtn" style="display:none;margin-top:8px">📊 MSP Portfolio CSV</button>
+  <div id="resultBox" style="margin-top:12px"></div>
+</div>
+
+<div class="card">
+  <h2>🔬 Backtest Mode</h2>
+  <div class="note" style="margin-bottom:8px">
+    ભૂતકાળની તારીખ પસંદ કરો — scan + future performance check.
+  </div>
+  <label class="toggle-box" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe">
+    <input type="checkbox" id="btToggle">
+    Backtest Mode ચાલુ કરો
+  </label>
+  <div id="btPanel" style="display:none;margin-top:12px">
+    <label>Cutoff Date</label>
+    <select id="btDateSelect"></select>
+
+    <div style="margin-top:10px;font-weight:bold;color:#047857;font-size:14px">Pattern Filter</div>
+    <div class="pat-filter" id="btPatternFilter">
+      <label class="on"><input type="checkbox" data-pat="flag" checked> ✅ બુલ ફ્લેગ</label>
+      <label><input type="checkbox" data-pat="20d"> 20D બ્રેકઆઉટ</label>
+      <label><input type="checkbox" data-pat="triangle"> એસેન્ડિંગ ટ્રાયેંગલ</label>
+      <label><input type="checkbox" data-pat="htf"> હાઈ ટાઈટ ફ્લેગ</label>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <div style="flex:1">
+        <label>Forward Days</label>
+        <input type="number" id="btForwardDays" value="20" min="1" max="40">
+      </div>
+      <div style="flex:1">
+        <label>Target %</label>
+        <input type="number" id="btTargetPct" value="5" min="1" max="50" step="0.5">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1">
+        <label>Stop Loss %</label>
+        <input type="number" id="btSlPct" value="-3" max="-0.5" step="0.5">
+      </div>
+      <div style="flex:1">
+        <label>Max Gap %</label>
+        <input type="number" id="btGapPct" value="1" min="0.5" max="10" step="0.5">
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn info" id="btRunBtn">ચલાવો</button>
+      <button class="btn dark" id="btCopyBtn">📋 Copy</button>
+    </div>
+    <div class="note" id="btHint" style="margin-top:6px"></div>
+    <div id="btResultBox"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Symbol Check (Debug)</h2>
+  <input type="text" id="checkSymInput" placeholder="દા.ત. BANDHANBNK" style="text-transform:uppercase">
+  <button class="btn info" id="checkSymBtn">Check કરો</button>
+  <div id="checkSymResult" style="margin-top:12px"></div>
+</div>
+
+<div class="card">
+  <h2>ખૂટતા માર્કેટ દિવસો</h2>
+  <div id="missingList"><span style="color:#94a3b8">—</span></div>
+</div>
+
+<div class="card">
+  <h2>ડેટા મેનેજમેન્ટ</h2>
+  <details>
+    <summary>લોડ થયેલા દિવસો (<span id="loadedCount">0</span>)</summary>
+    <div id="loadedList" style="margin-top:10px"><span style="color:#94a3b8">કોઈ ડેટા નથી</span></div>
+  </details>
+  <details>
+    <summary>Skip કરેલા (<span id="skipCount">0</span>)</summary>
+    <div id="skipList" style="margin-top:10px"><span style="color:#94a3b8">કોઈ સ્ટોક skip નથી</span></div>
+  </details>
+  <div class="btn-row">
+    <button class="btn warn" id="refreshBtn">🔄 રિફ્રેશ</button>
+    <button class="btn danger" id="clearBtn">🗑️ Skip/Filter સાફ</button>
+  </div>
+</div>
+
+<div class="card">
+  <details>
+    <summary>લોગ જુઓ</summary>
+    <div class="log" id="logBox" style="margin-top:10px"></div>
+  </details>
+</div>
+
+<div class="note" style="text-align:center;margin-top:20px;font-size:12px">
+  શૈક્ષણિક ટૂલ. રોકાણ સલાહ નથી.
+</div>
+
+<script src="db.js"></script>
+<script>
+(function(){
+'use strict';
+
+var DB_NAME='nse_bhavcopy_db', DB_VER=6, STORE='days', STORE_SKIP='skips', STORE_WATCH='watch', STORE_TRADES='trades', STORE_INDEX='indexlist';
+var db=null, loadedDays=[], currentResults=[], skippedMap={};
+var SKIP_DAYS=7;
+var RETENTION_TRADING_DAYS = 70;
+
+var indexMap = null;
+var indexMeta = null;
+
+var QUALITY_STOCKS = {
+  'TCS':1,'INFY':1,'WIPRO':1,'HCLTECH':1,'TECHM':1,'LTIM':1,
+  'PERSISTENT':1,'COFORGE':1,'MPHASIS':1,'LTTS':1,'KPITTECH':1,
+  'TATAELXSI':1,'OFSS':1,'CYIENT':1,'TATATECH':1,
+  'HDFCBANK':1,'ICICIBANK':1,'SBIN':1,'KOTAKBANK':1,'AXISBANK':1,
+  'INDUSINDBK':1,'FEDERALBNK':1,'IDFCFIRSTB':1,'AUBANK':1,
+  'PNB':1,'CANBK':1,'BANKBARODA':1,'UNIONBANK':1,'BANDHANBNK':1,
+  'BAJFINANCE':1,'BAJAJFINSV':1,'BAJAJHLDNG':1,'HDFCLIFE':1,
+  'SBILIFE':1,'ICICIGI':1,'ICICIPRULI':1,'LICI':1,
+  'CHOLAFIN':1,'SHRIRAMFIN':1,'MUTHOOTFIN':1,'M&MFIN':1,'LTFH':1,
+  'PFC':1,'RECLTD':1,'HDFCAMC':1,'NAM-INDIA':1,'UTIAMC':1,
+  'ANGELONE':1,'MOTILALOFS':1,'BSE':1,'MCX':1,'CDSL':1,'IEX':1,
+  'SBICARD':1,'JIOFIN':1,
+  'HINDUNILVR':1,'ITC':1,'NESTLEIND':1,'BRITANNIA':1,
+  'DABUR':1,'MARICO':1,'GODREJCP':1,'COLPAL':1,'EMAMILTD':1,
+  'TATACONSUM':1,'VBL':1,'UBL':1,'RADICO':1,'UNITDSPR':1,
+  'JUBLFOOD':1,'DEVYANI':1,'WESTLIFE':1,'SAPPHIRE':1,
+  'PGHH':1,'GODFRYPHLP':1,
+  'SUNPHARMA':1,'CIPLA':1,'DRREDDY':1,'DIVISLAB':1,
+  'LUPIN':1,'AUROPHARMA':1,'TORNTPHARM':1,'ALKEM':1,
+  'ZYDUSLIFE':1,'GLENMARK':1,'IPCALAB':1,'ABBOTINDIA':1,
+  'MANKIND':1,'LAURUSLABS':1,'BIOCON':1,'GLAND':1,
+  'SYNGENE':1,'AJANTPHARM':1,'PPLPHARMA':1,
+  'APOLLOHOSP':1,'MAXHEALTH':1,'FORTIS':1,'NARAYANA':1,
+  'ASTERDM':1,'LALPATHLAB':1,'METROPOLIS':1,'THYROCARE':1,
+  'MARUTI':1,'TATAMOTORS':1,'M&M':1,'BAJAJ-AUTO':1,
+  'HEROMOTOCO':1,'EICHERMOT':1,'TVSMOTOR':1,'ASHOKLEY':1,
+  'ESCORTS':1,'BALKRISIND':1,'MRF':1,'APOLLOTYRE':1,
+  'CEATLTD':1,'JKTYRE':1,'MOTHERSON':1,'BOSCHLTD':1,
+  'BHARATFORG':1,'SUNDRMFAST':1,'ENDURANCE':1,'EXIDEIND':1,
+  'AMARAJABAT':1,
+  'TATASTEEL':1,'JSWSTEEL':1,'HINDALCO':1,'VEDL':1,
+  'JINDALSTEL':1,'SAIL':1,'NMDC':1,'HINDZINC':1,
+  'NATIONALUM':1,'APLAPOLLO':1,'RATNAMANI':1,'JSL':1,
+  'HINDCOPPER':1,'MOIL':1,'WELCORP':1,
+  'ULTRACEMCO':1,'SHREECEM':1,'AMBUJACEM':1,'ACC':1,
+  'DALBHARAT':1,'JKCEMENT':1,'RAMCOCEM':1,'HEIDELBERG':1,
+  'GRASIM':1,
+  'LT':1,'ADANIPORTS':1,'GMRINFRA':1,'IRB':1,
+  'RVNL':1,'IRCON':1,'NCC':1,'KEC':1,'KALPATPOWR':1,'IRFC':1,
+  'TITAN':1,'ASIANPAINT':1,'BERGEPAINT':1,'PIDILITIND':1,
+  'KANSAINER':1,'AKZOINDIA':1,'INDIGOPNTS':1,
+  'DMART':1,'TRENT':1,'ABFRL':1,'PAGEIND':1,
+  'BATAINDIA':1,'RELAXO':1,'METROBRAND':1,'CAMPUS':1,
+  'BHARTIARTL':1,'TATACOMM':1,'INDUSTOWER':1,'HFCL':1,'TEJASNET':1,
+  'DLF':1,'GODREJPROP':1,'OBEROIRLTY':1,'PRESTIGE':1,
+  'BRIGADE':1,'SOBHA':1,'PHOENIXLTD':1,'MAHLIFE':1,
+  'SRF':1,'PIIND':1,'UPL':1,'DEEPAKNTR':1,
+  'AARTIIND':1,'ATUL':1,'NAVINFLUOR':1,'TATACHEM':1,
+  'GNFC':1,'CHAMBLFERT':1,'COROMANDEL':1,'BAYERCROP':1,
+  'SUMICHEM':1,'FINEORG':1,'VINATIORGA':1,'CLEAN':1,
+  'SIEMENS':1,'ABB':1,'HAVELLS':1,'CROMPTON':1,
+  'POLYCAB':1,'KEI':1,'FINCABLES':1,'VGUARD':1,
+  'CUMMINSIND':1,'THERMAX':1,'AIAENG':1,'GRINDWELL':1,
+  'SCHAEFFLER':1,'TIMKEN':1,'SUPREMEIND':1,'ASTRAL':1,
+  'HAL':1,'BEL':1,'BHEL':1,'MAZDOCK':1,'COCHINSHIP':1,
+  'BDL':1,'DATAPATTNS':1,'PARAS':1,'MIDHANI':1,
+  'APARINDS':1,'RRKABEL':1,'DIXON':1,'KAYNES':1,'SYRMA':1,'AMBER':1,'VOLTAMP':1,
+  'RELIANCE':1,'ONGC':1,'IOC':1,'BPCL':1,'HINDPETRO':1,
+  'ADANIENT':1,'ADANIPOWER':1,'ATGL':1,
+  'GAIL':1,'PETRONET':1,'IGL':1,'MGL':1,'OIL':1,
+  'COALINDIA':1,'NTPC':1,'POWERGRID':1,'NHPC':1,'SJVN':1,
+  'TATAPOWER':1,'ADANIENSOL':1,'ADANIGREEN':1,'ADANIENERGY':1,
+  'JSWENERGY':1,'TORNTPOWER':1,'CESC':1,
+  'SUZLON':1,'INOXWIND':1,'BORORENEW':1,'WAAREEENER':1,'KPIGREEN':1,
+  'ZOMATO':1,'NYKAA':1,'POLICYBZR':1,'PAYTM':1,
+  'DELHIVERY':1,'NAUKRI':1,'NAZARA':1,
+  'INDIGO':1,'IRCTC':1,'INDHOTEL':1,'CHALET':1,
+  'LEMONTREE':1,'EIHOTEL':1,
+  'CONCOR':1,'BLUEDART':1,'TCI':1,'MAHLOG':1,'VRLLOG':1,
+  'SUNTV':1,'ZEEL':1,'PVRINOX':1,
+  'BALRAMCHIN':1,'RENUKA':1,'TRIVENI':1,'DHAMPURSUG':1,
+  'AVANTIFEED':1,'KRBL':1,'LTFOODS':1,
+  'TMPV':1,'TMCV':1,'ETERNAL':1,'LTF':1,'ARE&M':1,'GMRAIRPORT':1,
+  'GOLDIAM':1,'ALPHAGEO':1,'SILVERTUC':1
+};
+
+function $(id){return document.getElementById(id);}
+function setText(id,t){var e=$(id);if(e)e.textContent=t;}
+
+function log(msg){
+  var e=$('logBox'); if(!e)return;
+  var t=new Date().toLocaleTimeString();
+  e.innerHTML='['+t+'] '+msg+'\n'+e.innerHTML;
+  if(e.innerHTML.length>8000)e.innerHTML=e.innerHTML.substring(0,8000);
+}
+
+function openDB(){
+  return new Promise(function(res,rej){
+    var r=indexedDB.open(DB_NAME,DB_VER);
+    r.onupgradeneeded=function(e){
+      var d=e.target.result;
+      if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE,{keyPath:'date'});
+      if(!d.objectStoreNames.contains(STORE_SKIP)) d.createObjectStore(STORE_SKIP,{keyPath:'symbol'});
+      if(!d.objectStoreNames.contains(STORE_WATCH)) d.createObjectStore(STORE_WATCH,{keyPath:'symbol'});
+      if(!d.objectStoreNames.contains(STORE_TRADES)) d.createObjectStore(STORE_TRADES,{keyPath:'id'});
+      if(!d.objectStoreNames.contains(STORE_INDEX)) d.createObjectStore(STORE_INDEX,{keyPath:'id'});
+    };
+    r.onsuccess=function(e){db=e.target.result;res();};
+    r.onerror=function(e){rej(e.target.error);};
+  });
+}
+function putDay(){return Promise.resolve();}
+var VALID_S={EQ:1,BE:1,BZ:1,ST:1,SM:1,MT:1};
+function getDay(dt){return MarketDB.getDay(dt).then(function(x){if(!x)return null;var st={},i,w;for(i=0;i<x.rows.length;i++){w=x.rows[i];if(!VALID_S[w[1]])continue;st[w[0]]={o:w[2],h:w[3],l:w[4],c:w[5],v:w[7],s:w[1]};}return {date:dt,stocks:st,count:Object.keys(st).length};});}
+var HUB_DAYS=70; /* મૂળ એપ 70 દિવસ રાખતી હતી */
+function getAllKeys(){return MarketDB.dates().then(function(d){return d.slice(-HUB_DAYS);});}
+function deleteDay(){return Promise.resolve();}
+function clearAll(){return Promise.resolve();}
+
+function putIndexList(obj){return new Promise(function(res,rej){var tx=db.transaction([STORE_INDEX],'readwrite');var req=tx.objectStore(STORE_INDEX).put(obj);req.onsuccess=function(){res();};req.onerror=function(e){rej(e.target.error);};});}
+function getIndexList(){return new Promise(function(res,rej){var tx=db.transaction([STORE_INDEX],'readonly');var req=tx.objectStore(STORE_INDEX).get('main');req.onsuccess=function(){res(req.result);};req.onerror=function(e){rej(e.target.error);};});}
+function deleteIndexList(){return new Promise(function(res,rej){var tx=db.transaction([STORE_INDEX],'readwrite');var req=tx.objectStore(STORE_INDEX).delete('main');req.onsuccess=function(){res();};req.onerror=function(e){rej(e.target.error);};});}
+
+function daysSince(dateStr){
+  var p=dateStr.split('-');
+  var d=new Date(+p[0],+p[1]-1,+p[2]);
+  var now=new Date(); now.setHours(0,0,0,0);
+  return Math.floor((now-d)/86400000);
+}
+
+function putSkip(obj){return new Promise(function(res,rej){var tx=db.transaction([STORE_SKIP],'readwrite');var req=tx.objectStore(STORE_SKIP).put(obj);req.onsuccess=function(){res();};req.onerror=function(e){rej(e.target.error);};});}
+function deleteSkip(symbol){return new Promise(function(res,rej){var tx=db.transaction([STORE_SKIP],'readwrite');var req=tx.objectStore(STORE_SKIP).delete(symbol);req.onsuccess=function(){res();};req.onerror=function(e){rej(e.target.error);};});}
+function getAllSkips(){return new Promise(function(res,rej){var tx=db.transaction([STORE_SKIP],'readonly');var req=tx.objectStore(STORE_SKIP).getAll();req.onsuccess=function(){res(req.result||[]);};req.onerror=function(e){rej(e.target.error);};});}
+
+async function loadSkips(){
+  try{
+    var arr=await getAllSkips();
+    var today=ymd(new Date());
+    skippedMap={};
+    for(var i=0;i<arr.length;i++){
+      if(arr[i].until>=today) skippedMap[arr[i].symbol]=arr[i].until;
+      else await deleteSkip(arr[i].symbol);
+    }
+  }catch(e){log('skip load: '+e.message);}
+}
+async function skipStock(symbol){
+  var until=new Date();
+  until.setDate(until.getDate()+SKIP_DAYS);
+  var untilStr=ymd(until);
+  await putSkip({symbol:symbol,until:untilStr});
+  skippedMap[symbol]=untilStr;
+  currentResults=(currentResults||[]).filter(function(r){return r.symbol!==symbol;});
+  refreshView();
+  renderSkipList();
+  log(''+symbol+' - '+untilStr+' સુધી skip');
+}
+async function unskipStock(symbol){
+  await deleteSkip(symbol);
+  delete skippedMap[symbol];
+  renderSkipList();
+  log(''+symbol+' - ફરી દેખાશે');
+}
+function renderSkipList(){
+  var el=$('skipList'); if(!el) return;
+  var arr=Object.keys(skippedMap).map(function(s){return {symbol:s,until:skippedMap[s]};});
+  setText('skipCount',arr.length);
+  if(arr.length===0){ el.innerHTML='<span style="color:#94a3b8">કોઈ સ્ટોક skip નથી</span>'; return; }
+  arr.sort(function(a,b){return a.symbol<b.symbol?-1:(a.symbol>b.symbol?1:0);});
+  var h='';
+  for(var i=0;i<arr.length;i++){
+    h+='<div class="data-line"><span class="lbl">'+arr[i].symbol+' (સુધી '+arr[i].until+')</span>'
+      +'<button data-unskip="'+arr[i].symbol+'" class="btn info" '
+      +'style="width:auto;padding:6px 12px;font-size:12px;margin:0">પાછો</button></div>';
+  }
+  el.innerHTML=h;
+}
+
+function readFileText(file){
+  return new Promise(function(res,rej){
+    var r=new FileReader();
+    r.onload=function(){var t=r.result;if(t && t.charCodeAt(0)===0xFEFF) t=t.substring(1);res(t);};
+    r.onerror=function(){rej(r.error||new Error('read fail'));};
+    r.readAsText(file,'UTF-8');
+  });
+}
+
+function splitCSVLine(line){
+  var out=[], cur='', inQ=false;
+  for(var i=0;i<line.length;i++){
+    var ch=line[i];
+    if(ch==='"'){
+      if(inQ && line[i+1]==='"'){ cur+='"'; i++; }
+      else inQ=!inQ;
+    } else if(ch===',' && !inQ){ out.push(cur); cur=''; }
+    else cur+=ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+function parseIndexCSV(text){
+  if(!text) return {ok:false, reason:'empty', count:0};
+  if(text.charCodeAt(0)===0xFEFF) text=text.substring(1);
+  var lines = text.split(/\r?\n/);
+  if(lines.length < 2) return {ok:false, reason:'too_short', count:0};
+  var h = null, startIx = 0, symIx = -1;
+  for(var i=0; i<Math.min(8, lines.length); i++){
+    if(!lines[i]) continue;
+    var hh = splitCSVLine(lines[i]).map(function(v){ return String(v).trim(); });
+    var ix = hh.indexOf('Symbol');
+    if(ix < 0) ix = hh.indexOf('SYMBOL');
+    if(ix < 0) ix = hh.indexOf('symbol');
+    if(ix >= 0){ h = hh; startIx = i; symIx = ix; break; }
+  }
+  if(!h || symIx < 0) return {ok:false, reason:'no_symbol_column', count:0};
+  var set = {}, count = 0;
+  for(var j = startIx+1; j<lines.length; j++){
+    if(!lines[j]) continue;
+    var f = splitCSVLine(lines[j]);
+    var s = f[symIx];
+    if(!s) continue;
+    s = String(s).trim().replace(/^"|"$/g,'').toUpperCase();
+    if(!s) continue;
+    if(!set[s]){ set[s]=1; count++; }
+  }
+  if(count < 10) return {ok:false, reason:'too_few', count:count};
+  return {ok:true, symbols:set, count:count};
+}
+
+async function loadIndexList(){
+  try{
+    var rec = await getIndexList();
+    if(rec && rec.symbols){
+      indexMap = rec.symbols;
+      indexMeta = { name: rec.name, updated: rec.updated, count: rec.count };
+    } else { indexMap = null; indexMeta = null; }
+    renderIndexStatus();
+  }catch(e){ log('index load: '+e.message); }
+}
+
+function renderIndexStatus(){
+  var el = $('indexStatus'); if(!el) return;
+  if(!indexMeta){
+    el.innerHTML = '<span style="color:#dc2626;font-weight:bold">Filter બંધ — બધા stocks દેખાશે</span>';
+    return;
+  }
+  var days = daysSince(indexMeta.updated);
+  var color = days<=30 ? '#047857' : (days<=60 ? '#d97706' : '#dc2626');
+  el.innerHTML = '<b>'+indexMeta.name+'</b> — '+indexMeta.count+' stocks<br>'
+    +'અપડેટ: <b style="color:'+color+'">'+indexMeta.updated+' ('+days+' દિવસ)</b>';
+}
+
+function checkIndexReminder(){
+  var b = $('indexBanner'); if(!b) return;
+  if(!indexMeta){ b.style.display='none'; return; }
+  var days = daysSince(indexMeta.updated);
+  if(days >= 30){
+    b.style.display = 'block';
+    b.innerHTML = '<b>Stock Filter Update કરો!</b><br>'
+      +indexMeta.name+' '+days+' દિવસ જૂની છે.';
+  } else { b.style.display = 'none'; }
+}
+
+async function loadQualityStocks(){
+  try{
+    var rec = {
+      id: 'main', name: 'Quality Stocks ',
+      symbols: QUALITY_STOCKS,
+      count: Object.keys(QUALITY_STOCKS).length,
+      updated: ymd(new Date())
+    };
+    await putIndexList(rec);
+    indexMap = rec.symbols;
+    indexMeta = { name: rec.name, updated: rec.updated, count: rec.count };
+    renderIndexStatus(); checkIndexReminder();
+    log('Quality Stocks: '+rec.count+' companies loaded');
+    alert('Quality Stocks Loaded!\n\n'+rec.count+' companies');
+  }catch(e){
+    log('quality load: '+e.message);
+    alert('error: '+e.message);
+  }
+}
+
+async function handleIndexUpload(files){
+  if(!files || !files.length) return;
+  var f = files[0];
+  try{
+    var txt = await readFileText(f);
+    var res = parseIndexCSV(txt);
+    if(!res.ok){
+      var msg;
+      if(res.reason === 'no_symbol_column') msg = 'CSV માં "Symbol" column મળ્યું નહીં.';
+      else if(res.reason === 'too_few') msg = 'ફક્ત ' + res.count + ' symbols મળ્યા (10+ જોઈએ).';
+      else if(res.reason === 'too_short') msg = 'CSV ખાલી કે અધૂરી છે.';
+      else msg = 'CSV વાંચી શકાઈ નહીં.';
+      alert(msg);
+      return;
+    }
+    var name = 'Custom Index';
+    var fn = f.name.toLowerCase();
+    if(/nifty.?500/.test(fn)) name = 'Nifty 500';
+    else if(/nifty.?200/.test(fn)) name = 'Nifty 200';
+    else if(/nifty.?100/.test(fn)) name = 'Nifty 100';
+    else if(/nifty.?50(?!\d)/.test(fn)) name = 'Nifty 50';
+    else if(/midcap.?150/.test(fn)) name = 'Nifty Midcap 150';
+    else if(/smallcap.?250/.test(fn)) name = 'Nifty Smallcap 250';
+    else if(/nifty.?total/.test(fn)) name = 'Nifty Total Market';
+    else name = f.name.replace(/\.csv$/i,'').replace(/^ind_/i,'');
+
+    var rec = { id: 'main', name: name, symbols: res.symbols, count: res.count, updated: ymd(new Date()) };
+    await putIndexList(rec);
+    indexMap = rec.symbols;
+    indexMeta = { name: rec.name, updated: rec.updated, count: rec.count };
+    renderIndexStatus(); checkIndexReminder();
+    log('Index: '+name+' ('+res.count+' stocks)');
+    alert(''+name+'\n'+res.count+' stocks લોડ થયા.');
+  }catch(e){
+    log('index upload: '+e.message);
+    alert('error: '+e.message);
+  }
+}
+
+async function handleIndexClear(){
+  if(!confirm('Filter કાઢી નાખવો?')) return;
+  await deleteIndexList();
+  indexMap = null; indexMeta = null;
+  renderIndexStatus(); checkIndexReminder();
+  log('Filter કાઢ્યો');
+}
+
+function parseCSV(text){
+  if(!text) return null;
+  if(text.charCodeAt(0)===0xFEFF) text=text.substring(1);
+  var lines=text.split(/\r?\n/);
+  if(lines.length<2) return null;
+  var h=splitCSVLine(lines[0]).map(function(v){return String(v).trim();});
+  var ix={d:h.indexOf('TradDt'),s:h.indexOf('TckrSymb'),
+    sr:h.indexOf('SctySrs'),o:h.indexOf('OpnPric'),hi:h.indexOf('HghPric'),
+    lo:h.indexOf('LwPric'),c:h.indexOf('ClsPric'),v:h.indexOf('TtlTradgVol')};
+  if(ix.d<0||ix.s<0||ix.c<0) return null;
+  var date=null, stocks={}, valid={EQ:1,BE:1,BZ:1,ST:1,SM:1,MT:1};
+  var hLen=h.length;
+  var mismatch=0;
+  for(var i=1;i<lines.length;i++){
+    var ln=lines[i]; if(!ln) continue;
+    var f=splitCSVLine(ln);
+    if(f.length !== hLen){ mismatch++; continue; }
+    var sr = String(f[ix.sr] == null ? '' : f[ix.sr]).trim();
+    if(!valid[sr]) continue;
+    var sym = String(f[ix.s] == null ? '' : f[ix.s]).trim().toUpperCase();
+    if(!sym) continue;
+    if(!date) date=String(f[ix.d]).trim();
+    var o=parseFloat(f[ix.o]),hi=parseFloat(f[ix.hi]);
+    var lo=parseFloat(f[ix.lo]),c=parseFloat(f[ix.c]);
+    var v=parseFloat(f[ix.v])||0;
+    if(isNaN(c)||c<=0) continue;
+    stocks[sym]={o:isNaN(o)?c:o,h:isNaN(hi)?c:hi,l:isNaN(lo)?c:lo,c:c,v:v,s:sr};
+  }
+  if(!date) return null;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ log('Invalid date: "'+date+'"'); return null; }
+  if(Object.keys(stocks).length === 0){ log('No valid stocks in file (date: '+date+')'); return null; }
+  if(mismatch>0) log('Mismatch: '+mismatch+' rows');
+  return {date:date,stocks:stocks,count:Object.keys(stocks).length};
+}
+
+function processZip(file,onProg){
+  return new Promise(function(res,rej){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var zip=new JSZip();
+      zip.loadAsync(e.target.result).then(function(z){
+        var files=[];
+        z.forEach(function(path,entry){
+          if(!entry.dir && /\.csv$/i.test(path)) files.push(entry);
+        });
+        if(files.length===0){rej(new Error('ZIP માં CSV નથી'));return;}
+        var results=[], done=0;
+        function step(){
+          if(done>=files.length){res(results);return;}
+          var en=files[done];
+          if(onProg) onProg(done,files.length,en.name);
+          en.async('string').then(function(txt){
+            var d=parseCSV(txt);
+            if(d) results.push(d);
+            done++;
+            setTimeout(step,0);
+          }).catch(function(){done++;setTimeout(step,0);});
+        }
+        step();
+      }).catch(rej);
+    };
+    reader.onerror=function(){rej(reader.error||new Error('zip read fail'));};
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function ymd(d){
+  var y=d.getFullYear();
+  var m=d.getMonth()+1; m=m<10?'0'+m:''+m;
+  var day=d.getDate(); day=day<10?'0'+day:''+day;
+  return y+'-'+m+'-'+day;
+}
+function parseDate(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+
+var NSE_HOLIDAYS={
+  '2024-01-22':1,'2024-01-26':1,'2024-03-08':1,'2024-03-25':1,'2024-03-29':1,
+  '2024-04-11':1,'2024-04-14':1,'2024-04-17':1,'2024-05-01':1,'2024-05-20':1,
+  '2024-06-17':1,'2024-07-17':1,'2024-08-15':1,'2024-10-02':1,'2024-11-01':1,
+  '2024-11-15':1,'2024-12-25':1,
+  '2025-01-26':1,'2025-02-26':1,'2025-03-14':1,'2025-03-31':1,'2025-04-10':1,
+  '2025-04-14':1,'2025-04-18':1,'2025-05-01':1,'2025-08-15':1,'2025-08-27':1,
+  '2025-10-02':1,'2025-10-21':1,'2025-10-22':1,'2025-11-05':1,'2025-12-25':1,
+  '2026-01-15':1,'2026-01-26':1,'2026-03-03':1,'2026-03-26':1,'2026-03-31':1,
+  '2026-04-03':1,'2026-04-14':1,'2026-05-01':1,'2026-05-28':1,'2026-06-26':1,
+  '2026-09-14':1,'2026-10-02':1,'2026-10-20':1,'2026-11-10':1,'2026-11-24':1,
+  '2026-12-25':1
+};
+
+function isMarketDay(s){
+  var d=parseDate(s), dow=d.getDay();
+  if(dow===0||dow===6) return false;
+  if(NSE_HOLIDAYS[s]) return false;
+  return true;
+}
+function findMissing(loadedDates){
+  if(loadedDates.length<2) return [];
+  var sorted=loadedDates.slice().sort();
+  var set={}; for(var i=0;i<sorted.length;i++) set[sorted[i]]=1;
+  var missing=[];
+  var cur=parseDate(sorted[0]);
+  var end=parseDate(sorted[sorted.length-1]);
+  while(cur<=end){
+    var s=ymd(cur);
+    if(isMarketDay(s)&&!set[s]) missing.push(s);
+    cur.setDate(cur.getDate()+1);
+  }
+  return missing;
+}
+
+function lastMarketDay(){
+  var d=new Date();
+  d.setHours(0,0,0,0);
+  var guard=0;
+  while(!isMarketDay(ymd(d)) && guard<30){ d.setDate(d.getDate()-1); guard++; }
+  return ymd(d);
+}
+
+function fmtVol(v){
+  if(v>=10000000) return (v/10000000).toFixed(2)+' Cr';
+  if(v>=100000) return (v/100000).toFixed(2)+' L';
+  if(v>=1000) return (v/1000).toFixed(1)+' K';
+  return Math.round(v).toString();
+}
+function fmtPrice(v){ return '₹'+v.toFixed(2); }
+
+function sparklineSVG(closes){
+  if(!closes || closes.length<2) return '';
+  var w=220, h=60, pad=4;
+  var min=closes[0], max=closes[0];
+  for(var i=1;i<closes.length;i++){ if(closes[i]<min) min=closes[i]; if(closes[i]>max) max=closes[i]; }
+  var isFlat = (max === min);
+  var range = (max-min) || 1;
+  var stepX = (w-pad*2)/(closes.length-1);
+  var pts=[];
+  for(var j=0;j<closes.length;j++){
+    var x = pad + j*stepX;
+    var y = isFlat ? pad + (h-pad*2)/2 : pad + (h-pad*2) * (1 - (closes[j]-min)/range);
+    pts.push(x.toFixed(1)+','+y.toFixed(1));
+  }
+  var first = closes[0], last = closes[closes.length-1];
+  var pct = isFlat ? 0 : ((last-first)/first)*100;
+  var up = pct >= 0;
+  var lineColor = up ? '#059669' : '#dc2626';
+  var fillColor = up ? '#a7f3d0' : '#fecaca';
+  var lastX = pad + (closes.length-1)*stepX;
+  var lastY = isFlat ? pad + (h-pad*2)/2 : pad + (h-pad*2) * (1 - (last-min)/range);
+  var areaPts = pts.join(' ')+' '+(w-pad).toFixed(1)+','+(h-pad).toFixed(1)+' '+pad+','+(h-pad).toFixed(1);
+  var svg = '<svg width="100%" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" style="display:block">'
+    +'<polygon points="'+areaPts+'" fill="'+fillColor+'" opacity="0.55"/>'
+    +'<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+lineColor+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>'
+    +'<circle cx="'+lastX.toFixed(1)+'" cy="'+lastY.toFixed(1)+'" r="3" fill="'+lineColor+'"/>'
+    +'</svg>';
+  var sign = pct>=0 ? '+' : '';
+  var textColor = up ? '#047857' : '#dc2626';
+  return '<div style="display:flex;align-items:center;gap:10px;background:'
+    +(up?'#ecfdf5':'#fef2f2')+';border-radius:12px;padding:8px 12px;margin-top:8px;overflow:hidden">'
+    +'<div style="flex:1 1 auto;min-width:0;overflow:hidden">'+svg+'</div>'
+    +'<div style="flex:0 0 auto;text-align:right;white-space:nowrap;font-weight:bold;color:'+textColor+';font-size:13px;line-height:1.5">'
+    +closes.length+' દિવસ<br>'+sign+pct.toFixed(1)+'%</div>'
+    +'</div>';
+}
+
+function detectPatterns(arr){
+  var pats=[], n=arr.length, last=arr[n-1];
+
+  if(n>=25){
+    var lb=arr.slice(n-21,n-1), mh=0, sv=0;
+    for(var i=0;i<lb.length;i++){ if(lb[i].h>mh) mh=lb[i].h; sv+=lb[i].v; }
+    var av=sv/lb.length;
+    if(last.c>mh && last.v>av*2){
+      pats.push({name:'20D બ્રેકઆઉટ', cls:'g', key:'20d',
+        entry: mh*1.005, reqVol: av*2, avgVol: av, lastVol: last.v,
+        ready: last.v>=av*2,
+        detail:'બ્રેક: ₹'+mh.toFixed(2)+' | અત્યારે: ₹'+last.c.toFixed(2)});
+    }
+  }
+
+  if(n>=15){
+    var fs=n-8; if(fs<1)fs=1;
+    var ps=fs-7; if(ps<0)ps=0;
+    if(fs>ps){
+      var pb=arr[ps].c, pt=arr[fs-1].c;
+      var gain=((pt-pb)/pb)*100;
+      if(gain>=5 && gain<=35){
+        var cons=arr.slice(fs);
+        var priorCons=cons.slice(0, cons.length-1);
+        if(priorCons.length>=1 && cons.length>=2 && cons.length<=10){
+          var mx=0, mn=1e9;
+          for(var j=0;j<priorCons.length;j++){ if(priorCons[j].c<mn) mn=priorCons[j].c; }
+          for(var jp=0;jp<priorCons.length;jp++){ if(priorCons[jp].c>mx) mx=priorCons[jp].c; }
+          var cr=((mx-mn)/mn)*100;
+          if(cr<8){
+            var pvs=Math.max(0,ps-20), psum=0, pcnt=0;
+            for(var p=pvs;p<ps;p++){psum+=arr[p].v;pcnt++;}
+            var pavg = pcnt>0 ? psum/pcnt : cons[0].v;
+            pats.push({name:'બુલ ફ્લેગ', cls:'', key:'flag',
+              entry: mx*1.005, reqVol: pavg*2, avgVol: pavg, lastVol: last.v,
+              ready: last.v>=pavg*2,
+              detail:'ધ્રુવ +'+gain.toFixed(1)+'% | કન્સોલિ '+cr.toFixed(1)+'%'});
+          }
+        }
+      }
+    }
+  }
+
+  if(n>=20){
+    var r=arr.slice(n-15);
+    var prior=r.slice(0, r.length-1);
+    if(prior.length>=3){
+      var hi=[], lo=[];
+      for(var k=0;k<prior.length;k++){hi.push(prior[k].h);lo.push(prior[k].l);}
+      var hl=0;
+      for(var m=1;m<lo.length;m++) if(lo[m]>lo[m-1]*1.005) hl++;
+      if(hl>=lo.length*0.5){
+        var hM=Math.max.apply(null,hi), hm=Math.min.apply(null,hi);
+        var hr=((hM-hm)/hm)*100;
+        var touches=0;
+        for(var q=0;q<hi.length;q++) if(hi[q]>=hM*0.98) touches++;
+        if(hr<10 && touches>=3){
+          var tsum=0,tcnt=0;
+          for(var t=0;t<prior.length;t++){tsum+=prior[t].v;tcnt++;}
+          var tavg=tcnt>0?tsum/tcnt:1;
+          pats.push({name:'એસેન્ડિંગ ટ્રાયેંગલ', cls:'o', key:'triangle',
+            entry: hM*1.005, reqVol: tavg*2, avgVol: tavg, lastVol: last.v,
+            ready: last.v>=tavg*2,
+            detail:'રેઝિસ્ટન્સ: ₹'+hM.toFixed(2)});
+        }
+      }
+    }
+  }
+
+  if(n>=50){
+    var fsH=n-20, psH=fsH-30;
+    if(psH>=0 && fsH>psH){
+      var pbH=arr[psH].c, ptH=arr[fsH-1].c;
+      var gainH=((ptH-pbH)/pbH)*100;
+      if(gainH>=100){
+        var consH=arr.slice(fsH);
+        var priorH=consH.slice(0, consH.length-1);
+        if(priorH.length>=1){
+          var mxH=0, mnH=1e9;
+          for(var jh=0;jh<priorH.length;jh++){ if(priorH[jh].c<mnH) mnH=priorH[jh].c; }
+          for(var jph=0;jph<priorH.length;jph++){ if(priorH[jph].c>mxH) mxH=priorH[jph].c; }
+          var crH=((mxH-mnH)/mnH)*100;
+          if(crH>=10 && crH<=25){
+            var pvsH=Math.max(0,psH-20), psumH=0, pcntH=0;
+            for(var ppH=pvsH;ppH<psH;ppH++){psumH+=arr[ppH].v;pcntH++;}
+            var pavgH = pcntH>0 ? psumH/pcntH : consH[0].v;
+            pats.push({name:'હાઈ ટાઈટ ફ્લેગ', cls:'p', key:'htf',
+              entry: mxH*1.005, reqVol: pavgH*2, avgVol: pavgH, lastVol: last.v,
+              ready: last.v>=pavgH*2,
+              detail:'ધ્રુવ +'+gainH.toFixed(0)+'% | કન્સોલિ '+crH.toFixed(1)+'%'});
+          }
+        }
+      }
+    }
+  }
+
+  return pats;
+}
+
+var MIN_PRICE=20;
+
+/* ═══ UPDATED: ETF regex with GOLD/SILVER/HALF/ADD ═══ */
+var EXCLUDE_RE = /BEES|ETF|IETF|LIQUID|GSEC|GILT|BOND|EBBETF|ABGSEC|NIFTY|SENSEX|BANKNIFTY|FINNIFTY|MIDCPNIFTY|BANKEX|NIF100|NIFMID|NEXT50|NV20|MID150|TOP10|LOWVOL|MOMENTUM|MOVALUE|MOALPHA|MOMGF|MOMNC|MOM100|MON100|MONQ50|MAFANG|MAHKTECH|MASPTOP50|INFRABEES|CONSUMIETF|HEALTHADD|ITBETA|METALIETF|BFSI|FINIETF|PSUBNK|MIDCAPIETF|BANKBETF|PSUBNKIETF|GOLD1|GOLD360|GOLDAXIS|GOLDBETA|GOLDCASE|TWCGOLD|BSLGOLD|AONEGOLD|GOLDADD|QGOLDHALF|HDFCGOLD|GOLDSHARE|GOLDETF|SETFGOLD|ICICIGOLD|AXISGOLD|KOTAKGOLD|IDBIGOLD|SBIGETS|SILVER1|SILVERAXIS|SILVERTOUCH|SBISILVER|AONESILVER|SILVERETF|SILVERADD|SILVERBEES|^ALPHA$|^VALUE$|^QUALITY$|^DIV$|^ESG$|^MAKEINDIA$|CPSE|CONSUMER|HEALTHY|MULTICAP|ICICIB22|SETFNIF|MIDCAP|SMALLCAP|MOINF|MOREAL|MOTOUR|MOCAP|MOSMA|MOSER|MOENE|MOHEA|MOFIN|MOLOW|HDFCNIF|HDFCNEXT|HDFCMO|HDFCMID150|MOM30IETF|GROWW|HALF/i;
+
+var PATTERN_PRIORITY = { htf: 1, '20d': 2, flag: 3, triangle: 4 };
+
+var REQUIRE_VOL_TREND = true, funnel = null, lastFunnel = null, lastVolTrendReq = true;
+
+/* Pattern filter — DEFAULT: Bull Flag only */
+var PATTERN_FILTER = { 'flag': true, '20d': false, 'triangle': false, 'htf': false };
+var ACTIVE_GAP_PCT = 1;
+
+function syncPatternFilterUI(containerId){
+  var box = $(containerId); if(!box) return;
+  var labels = box.querySelectorAll('label');
+  for(var i=0;i<labels.length;i++){
+    var cb = labels[i].querySelector('input[type=checkbox]');
+    if(cb && cb.checked) labels[i].classList.add('on');
+    else labels[i].classList.remove('on');
+  }
+}
+function readPatternFilter(containerId){
+  var box = $(containerId); if(!box) return;
+  var cbs = box.querySelectorAll('input[type=checkbox][data-pat]');
+  for(var i=0;i<cbs.length;i++){
+    PATTERN_FILTER[cbs[i].getAttribute('data-pat')] = cbs[i].checked;
+  }
+}
+function anyPatternEnabled(){
+  return PATTERN_FILTER['flag'] || PATTERN_FILTER['20d'] || PATTERN_FILTER['triangle'] || PATTERN_FILTER['htf'];
+}
+function filterPatterns(pats){
+  var out = [];
+  for(var i=0;i<pats.length;i++){
+    if(PATTERN_FILTER[pats[i].key]) out.push(pats[i]);
+  }
+  return out;
+}
+
+function patternStage(r, p){
+  if(!r.trendOk) return 1;
+  var volOk = p.avgVol > 0 && (p.lastVol / p.avgVol) >= 2;
+  if(!volOk) return 2;
+  var distOk = (p.distPct !== undefined) && p.distPct >= -2 && p.distPct <= 5;
+  if(!distOk) return 3;
+  var runupOk = (p.key === 'htf') || ((r.runupPct || 0) < 100);
+  var turnoverOk = (p.turnover || 0) >= 10000000;
+  if(!(runupOk && turnoverOk)) return 4;
+  if(REQUIRE_VOL_TREND && !r.volTrendOk) return 5;
+  return 6;
+}
+
+function calculateSignal(r){
+  var pat = r.patterns[0];
+  if(!pat) return { score: 0, status: 'red', max: 6 };
+  var pts = 0;
+  var dist = (pat.distPct !== undefined) ? pat.distPct : 99;
+  if(dist >= -2 && dist <= 3) pts += 2;
+  else if(dist > 3 && dist <= 5) pts += 1;
+  var vr = pat.volRatio || 0;
+  if(vr >= 2) pts += 2;
+  else if(vr >= 1.5) pts += 1.5;
+  else if(vr >= 1.2) pts += 1;
+  else pts += 0.5;
+  if(r.lastClose < 5000) pts += 1;
+  else if(r.lastClose < 10000) pts += 0.5;
+  var rp = r.runupPct || 0;
+  if(rp < 50) pts += 1;
+  else if(rp < 100) pts += 0.5;
+  var status;
+  if(pts >= 4.5) status = 'green';
+  else if(pts >= 3) status = 'yellow';
+  else status = 'red';
+  return { score: pts, status: status, max: 6 };
+}
+
+function computeVolTrendOk(v1, v2, v3){
+  return (v3 >= v2) && (v2 >= v1) && (v3 > v1);
+}
+
+function analyzeSymbol(sym2, arr, minDays, latestDate){
+  if(arr.length<minDays) return null;
+  if(indexMap){ if(!indexMap[sym2]) return null; }
+  else if(EXCLUDE_RE.test(sym2)) return null;
+  var lastBar = arr[arr.length-1];
+  if(latestDate && lastBar.date !== latestDate) return null;
+  if(lastBar.c<MIN_PRICE) return null;
+  if(lastBar.s && lastBar.s!=='EQ' && lastBar.s!=='ST' && lastBar.s!=='SM' && lastBar.s!=='MT') return null;
+  if(funnel) funnel[0]++;
+
+  var pats=detectPatterns(arr);
+  if(pats.length===0) return null;
+
+  pats = filterPatterns(pats);
+  if(pats.length===0) return null;
+
+  var lastC = lastBar.c;
+  pats.sort(function(a,b){ return (PATTERN_PRIORITY[a.key]||99) - (PATTERN_PRIORITY[b.key]||99); });
+
+  for(var pi=0; pi<pats.length; pi++){
+    pats[pi].distPct = ((lastC - pats[pi].entry) / pats[pi].entry) * 100;
+    pats[pi].volRatio = pats[pi].reqVol > 0 ? (pats[pi].lastVol / pats[pi].reqVol) : 0;
+    pats[pi].turnover = (pats[pi].avgVol || 0) * lastC;
+    pats[pi].rangeMin = pats[pi].entry * 0.98;
+    pats[pi].rangeMax = pats[pi].entry * 1.03;
+  }
+
+  var lookback = Math.min(40, arr.length);
+  var recent = arr.slice(arr.length - lookback);
+  var runupPct = 0, runMinLow = 1e18;
+  for(var ri=0; ri<recent.length; ri++){
+    if(recent[ri].l > 0 && recent[ri].l < runMinLow) runMinLow = recent[ri].l;
+    if(runMinLow < 1e18 && recent[ri].h > runMinLow){
+      var rr = ((recent[ri].h - runMinLow) / runMinLow) * 100;
+      if(rr > runupPct) runupPct = rr;
+    }
+  }
+
+  var ma20 = null;
+  if(arr.length>=20){
+    var maSum=0;
+    for(var mi=arr.length-20; mi<arr.length; mi++) maSum+=arr[mi].c;
+    ma20 = maSum/20;
+  }
+  var trendOk = ma20!==null && lastC > ma20;
+
+  var volTrendOk = false;
+  if(arr.length>=3){
+    var v1=arr[arr.length-3].v, v2=arr[arr.length-2].v, v3=arr[arr.length-1].v;
+    volTrendOk = computeVolTrendOk(v1, v2, v3);
+  }
+
+  var sparkLookback = Math.min(70, arr.length);
+  var sparkArr = arr.slice(arr.length - sparkLookback);
+  var closes70 = [];
+  for(var ci=0; ci<sparkArr.length; ci++) closes70.push(sparkArr[ci].c);
+
+  var result = {
+    symbol:sym2, patterns:pats, lastClose:lastC, lastDate:lastBar.date,
+    distPct: pats[0].distPct, rangeMin: pats[0].rangeMin, rangeMax: pats[0].rangeMax,
+    runupPct: runupPct, ma20: ma20, trendOk: trendOk, volTrendOk: volTrendOk,
+    yesterday:arr.length>=2 ? arr[arr.length-2] : null, closes70: closes70
+  };
+
+  var best = 1, passing = [];
+  for(var qi=0; qi<pats.length; qi++){
+    var st = patternStage(result, pats[qi]);
+    if(st > best) best = st;
+    if(st === 6) passing.push(pats[qi]);
+  }
+  if(funnel){ for(var fi=1; fi<=best; fi++) funnel[fi]++; }
+  if(passing.length === 0) return null;
+
+  passing.sort(function(a,b){
+    var aRatio = a.reqVol > 0 ? (a.lastVol/a.reqVol) : 0;
+    var bRatio = b.reqVol > 0 ? (b.lastVol/b.reqVol) : 0;
+    var aDist = (a.distPct !== undefined) ? Math.abs(a.distPct) : 999;
+    var bDist = (b.distPct !== undefined) ? Math.abs(b.distPct) : 999;
+    var aScore = (aRatio>=1?1000:aRatio*100) - aDist;
+    var bScore = (bRatio>=1?1000:bRatio*100) - bDist;
+    if(aScore !== bScore) return bScore - aScore;
+    return (PATTERN_PRIORITY[a.key]||99) - (PATTERN_PRIORITY[b.key]||99);
+  });
+
+  result.patterns = passing;
+  result.distPct = passing[0].distPct;
+  result.rangeMin = passing[0].rangeMin;
+  result.rangeMax = passing[0].rangeMax;
+  result.signal = calculateSignal(result);
+  return result;
+}
+
+function scanPatterns(days, minDays){
+  var symMap={};
+  days.sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+  var latestDate = days.length ? days[days.length-1].date : null;
+  funnel=[0,0,0,0,0,0,0]; lastFunnel=funnel;
+  for(var i=0;i<days.length;i++){
+    var d=days[i];
+    for(var sym in d.stocks){
+      if(!symMap[sym]) symMap[sym]=[];
+      var s=d.stocks[sym];
+      symMap[sym].push({date:d.date,o:s.o,h:s.h,l:s.l,c:s.c,v:s.v,s:s.s});
+    }
+  }
+  var results=[];
+  for(var sym2 in symMap){
+    var arr=symMap[sym2];
+    arr.sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+    var r=analyzeSymbol(sym2, arr, minDays, latestDate);
+    if(r) results.push(r);
+  }
+  funnel=null;
+  var order = {green:0, yellow:1, red:2};
+  results.sort(function(a,b){
+    var aO = order[a.signal ? a.signal.status : 'red'];
+    var bO = order[b.signal ? b.signal.status : 'red'];
+    if(aO !== bO) return aO - bO;
+    return (b.signal ? b.signal.score : 0) - (a.signal ? a.signal.score : 0);
+  });
+  return results;
+}
+
+/* ═══ BACKTEST with D+2 filter ═══ */
+var lastBacktestData = null;
+
+function populateBacktestDates(){
+  var sel = $('btDateSelect'); if(!sel) return;
+  var sorted = loadedDays.slice().sort(function(a,b){ return a.date<b.date?-1:(a.date>b.date?1:0); });
+  var valid = sorted.slice(24, sorted.length - 1);
+  if(valid.length === 0){
+    sel.innerHTML = '<option value="">— પૂરતો ડેટા નથી —</option>';
+    setText('btHint','ઓછામાં ઓછા 27 દિવસ + cutoff પછી 1 દિવસ જોઈએ.');
+    return;
+  }
+  var h = '';
+  for(var i=valid.length-1;i>=0;i--) h += '<option value="'+valid[i].date+'">'+valid[i].date+'</option>';
+  sel.innerHTML = h;
+  setText('btHint',''+valid.length+' cutoff dates ઉપલબ્ધ.');
+}
+
+function evaluateBacktest(result, futureBars, forwardDays, targetPct, slPct, gapPct){
+  var entry = result.patterns[0].entry;
+  var ev = {
+    symbol: result.symbol, pattern: result.patterns[0].name,
+    signalStatus: result.signal ? result.signal.status : 'red',
+    signalScore: result.signal ? result.signal.score : 0,
+    entry: entry, rangeMin: result.rangeMin, rangeMax: result.rangeMax,
+    scanClose: result.lastClose, triggered: false, triggerDay: null, entryFill: null,
+    exitDay: null, exitPrice: null, exitReason: null, pnlPct: null,
+    maxGainPct: 0, maxLossPct: 0, daysTracked: 0, gapMissed: false, lateTrigger: false
+  };
+
+  var target = 0, sl = 0;
+  var gapMax = entry * (1 + gapPct/100);
+
+  for(var i=0;i<futureBars.length && i<forwardDays;i++){
+    var b = futureBars[i];
+    ev.daysTracked = i+1;
+
+    if(!ev.triggered){
+      /* D+2 deadline — D+3+ trigger skip */
+      if(i >= 2){
+        ev.lateTrigger = true;
+        continue;
+      }
+      if(b.o > gapMax){ ev.gapMissed = true; continue; }
+      if(b.h >= entry){
+        ev.triggered = true;
+        ev.triggerDay = i+1;
+        ev.entryFill = b.o > entry ? b.o : entry;
+        target = ev.entryFill * (1 + targetPct/100);
+        sl = ev.entryFill * (1 + slPct/100);
+        var gsd = (b.h - ev.entryFill)/ev.entryFill*100;
+        var lsd = (b.l - ev.entryFill)/ev.entryFill*100;
+        if(gsd > ev.maxGainPct) ev.maxGainPct = gsd;
+        if(lsd < ev.maxLossPct) ev.maxLossPct = lsd;
+        if(b.l <= sl){ ev.exitDay=i+1; ev.exitPrice=sl; ev.exitReason='SL'; ev.pnlPct=slPct; return ev; }
+        if(b.h >= target){ ev.exitDay=i+1; ev.exitPrice=target; ev.exitReason='TARGET'; ev.pnlPct=targetPct; return ev; }
+      }
+      continue;
+    }
+
+    var g = (b.h - ev.entryFill)/ev.entryFill*100;
+    var l = (b.l - ev.entryFill)/ev.entryFill*100;
+    if(g > ev.maxGainPct) ev.maxGainPct = g;
+    if(l < ev.maxLossPct) ev.maxLossPct = l;
+    if(b.l <= sl){ ev.exitDay=i+1; ev.exitPrice=sl; ev.exitReason='SL'; ev.pnlPct=slPct; return ev; }
+    if(b.h >= target){ ev.exitDay=i+1; ev.exitPrice=target; ev.exitReason='TARGET'; ev.pnlPct=targetPct; return ev; }
+  }
+
+  if(ev.triggered && futureBars.length > 0){
+    var n = Math.min(futureBars.length, forwardDays);
+    var lastClose = futureBars[n-1].c;
+    ev.exitDay = n; ev.exitPrice = lastClose; ev.exitReason = 'END';
+    ev.pnlPct = (lastClose - ev.entryFill)/ev.entryFill*100;
+  }
+
+  return ev;
+}
+
+async function runBacktest(){
+  if(!anyPatternEnabled()){ alert('ઓછામાં ઓછું એક pattern select કરો'); return; }
+  var cutoff = $('btDateSelect').value;
+  if(!cutoff){ alert('Cutoff date પસંદ કરો'); return; }
+  var forwardDays = parseInt($('btForwardDays').value) || 20;
+  if(forwardDays < 1) forwardDays = 1;
+  if(forwardDays > 40) forwardDays = 40;
+  var targetPct = parseFloat($('btTargetPct').value);
+  if(isNaN(targetPct) || targetPct < 1) targetPct = 5;
+  var slPct = parseFloat($('btSlPct').value);
+  if(isNaN(slPct) || slPct >= 0) slPct = -3;
+  var gapPct = parseFloat($('btGapPct').value);
+  if(isNaN(gapPct) || gapPct < 0.5) gapPct = 1;
+
+  readPatternFilter('btPatternFilter');
+  ACTIVE_GAP_PCT = gapPct;
+
+  var btn = $('btRunBtn');
+  btn.disabled = true; btn.textContent = 'ચાલુ...';
+  await new Promise(function(r){setTimeout(r,80);});
+
+  try{
+    var keys = await getAllKeys(); keys.sort();
+    var all = [];
+    for(var i=0;i<keys.length;i++){
+      var d = await getDay(keys[i]);
+      if(d) all.push(d);
+    }
+    all.sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+
+    var past = all.filter(function(d){return d.date <= cutoff;});
+    if(past.length < 25){
+      alert('Cutoff પહેલા ઓછામાં ઓછા 25 દિવસ જોઈએ. હાલ '+past.length+' છે.');
+      btn.disabled = false; btn.textContent = 'ચલાવો';
+      return;
+    }
+
+    lastVolTrendReq = $('volTrendToggle').checked;
+    REQUIRE_VOL_TREND = lastVolTrendReq;
+
+    var rawResults = scanPatterns(past, 25);
+    var btFunnel = lastFunnel ? lastFunnel.slice() : null;
+    var results = rawResults.filter(function(r){return !skippedMap[r.symbol];});
+
+    var symAll = {};
+    for(var ai=0;ai<all.length;ai++){
+      var dd = all[ai];
+      for(var sym in dd.stocks){
+        if(!symAll[sym]) symAll[sym] = [];
+        var s = dd.stocks[sym];
+        symAll[sym].push({date:dd.date,o:s.o,h:s.h,l:s.l,c:s.c,v:s.v,s:s.s});
+      }
+    }
+    for(var ks in symAll) symAll[ks].sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+
+    var btResults = [];
+    for(var ri=0;ri<results.length;ri++){
+      var r = results[ri];
+      var full = symAll[r.symbol] || [];
+      var future = full.filter(function(b){return b.date > cutoff;});
+      btResults.push(evaluateBacktest(r, future, forwardDays, targetPct, slPct, gapPct));
+    }
+
+    btResults.sort(function(a,b){
+      var ap = (a.pnlPct === null) ? -999 : a.pnlPct;
+      var bp = (b.pnlPct === null) ? -999 : b.pnlPct;
+      return bp - ap;
+    });
+
+    var filterDesc = [];
+    ['flag','20d','triangle','htf'].forEach(function(k){
+      if(PATTERN_FILTER[k]){
+        var nm = {flag:'Bull Flag','20d':'20D','triangle':'Triangle','htf':'HTF'}[k];
+        filterDesc.push(nm);
+      }
+    });
+
+    lastBacktestData = {
+      cutoff: cutoff, forwardDays: forwardDays,
+      targetPct: targetPct, slPct: slPct, gapPct: gapPct,
+      patternFilter: filterDesc.join('+') || 'none',
+      scanned: rawResults.length, results: btResults, funnel: btFunnel,
+      generatedAt: new Date().toISOString()
+    };
+
+    renderBacktest(lastBacktestData);
+    log('Backtest: '+btResults.length+' / '+rawResults.length+' (cutoff '+cutoff+', fwd '+forwardDays+'d, T+'+targetPct+'% SL'+slPct+'% gap'+gapPct+'%)');
+  }catch(e){
+    log('backtest error: '+e.message);
+    alert('Backtest error: '+e.message);
+  }
+
+  btn.disabled = false; btn.textContent = 'ચલાવો';
+}
+
+function renderBacktest(data){
+  var el = $('btResultBox'); if(!el) return;
+  var bt = data.results || [];
+  if(bt.length === 0){
+    el.innerHTML = '<div class="empty">કોઈ પેટર્ન મળ્યું નથી</div>';
+    return;
+  }
+
+  var triggered = bt.filter(function(r){return r.triggered && r.pnlPct !== null;});
+  var winners = triggered.filter(function(r){return r.pnlPct > 0;});
+  var targets = triggered.filter(function(r){return r.exitReason === 'TARGET';});
+  var sls = triggered.filter(function(r){return r.exitReason === 'SL';});
+  var ends = triggered.filter(function(r){return r.exitReason === 'END';});
+  var noTrig = bt.filter(function(r){return !r.triggered;});
+  var late = bt.filter(function(r){return r.lateTrigger;});
+
+  var totalPnl = 0;
+  for(var i=0;i<triggered.length;i++) totalPnl += triggered[i].pnlPct;
+  var avgPnl = triggered.length ? totalPnl / triggered.length : 0;
+  var winRate = triggered.length ? Math.round(winners.length/triggered.length*100) : 0;
+
+  var cum = 0, peak = 0, maxDD = 0;
+  for(var d=0; d<triggered.length; d++){
+    cum += triggered[d].pnlPct;
+    if(cum > peak) peak = cum;
+    var dd = cum - peak;
+    if(dd < maxDD) maxDD = dd;
+  }
+
+  var h = '<div class="bt-stat">';
+  h += '<div><b>'+bt.length+'</b>Patterns</div>';
+  h += '<div><b>'+triggered.length+'</b>Triggered</div>';
+  h += '<div><b style="color:#047857">'+targets.length+'</b>TARGET</div>';
+  h += '<div><b style="color:#dc2626">'+sls.length+'</b>SL</div>';
+  h += '<div><b style="color:#1d4ed8">'+ends.length+'</b>END</div>';
+  h += '<div><b>'+winRate+'%</b>Win Rate</div>';
+  h += '<div><b style="color:'+(avgPnl>=0?'#047857':'#dc2626')+'">'+(avgPnl>=0?'+':'')+avgPnl.toFixed(2)+'%</b>Avg P&L</div>';
+  h += '<div><b style="color:'+(totalPnl>=0?'#047857':'#dc2626')+'">'+(totalPnl>=0?'+':'')+totalPnl.toFixed(1)+'%</b>Sum</div>';
+  h += '<div><b style="color:#dc2626">'+maxDD.toFixed(1)+'%</b>Max DD</div>';
+  h += '<div><b>'+noTrig.length+'</b>No-trigger</div>';
+  if(late.length > 0) h += '<div><b style="color:#d97706">'+late.length+'</b>Late (D+3+)</div>';
+  h += '</div>';
+
+  h += '<div class="note" style="margin-bottom:6px">Cutoff: <b>'+data.cutoff+'</b> · Fwd: <b>'+data.forwardDays+'d</b> · Target: <b>+'+data.targetPct+'%</b> · SL: <b>'+data.slPct+'%</b> · Gap: <b>'+data.gapPct+'%</b></div>';
+  h += '<div class="note" style="margin-bottom:6px">Patterns: <b>'+data.patternFilter+'</b> · D+2 deadline active</div>';
+
+  if(data.funnel){
+    h += '<details style="margin:10px 0"><summary>🎯 Filter Funnel</summary><div style="margin-top:8px">';
+    var fnames = ['Total analyzed','Pattern detected (1+)','Close > MA20 (2+)',
+      'Volume ≥2x (3+)','Entry dist -2%..+5% (4+)','Turnover ≥1Cr + Runup<100% (5+)',
+      'Vol 3-day trend (6 = FINAL)'];
+    for(var fi=0; fi<data.funnel.length && fi<fnames.length; fi++){
+      var pct = data.funnel[0] > 0 ? (data.funnel[fi]/data.funnel[0]*100).toFixed(1) : 0;
+      h += '<div class="data-line"><span class="lbl">'+fnames[fi]+'</span><span class="val">'+data.funnel[fi]+' ('+pct+'%)</span></div>';
+    }
+    h += '</div></details>';
+  }
+
+  h += '<div style="font-weight:bold;margin:10px 0 4px;font-size:15px">📋 Trades (PnL order):</div>';
+
+  for(var j=0;j<bt.length;j++){
+    var r = bt[j];
+    var cls = 'bt-row';
+    if(!r.triggered) cls += ' noTrig';
+    else if(r.exitReason === 'TARGET') cls += ' win';
+    else if(r.exitReason === 'SL') cls += ' loss';
+    else if(r.exitReason === 'END') cls += (r.pnlPct >= 0 ? ' win' : ' loss');
+    else cls += ' miss';
+
+    h += '<div class="'+cls+'">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">';
+    h += '<b style="font-size:16px">'+r.symbol+'</b>';
+    h += '<span style="font-size:12px;color:#64748b">'+r.pattern+'</span>';
+    h += '</div>';
+    h += '<div style="font-size:13px;margin-top:4px">Entry: <b>₹'+r.entry.toFixed(2)+'</b> · Scan close: ₹'+r.scanClose.toFixed(2)+'</div>';
+
+    if(r.triggered){
+      var pnlColor = r.pnlPct > 0 ? '#047857' : '#dc2626';
+      h += '<div style="font-size:13px;margin-top:2px">';
+      h += '✅ Trigger D+'+r.triggerDay+' @ ₹'+r.entryFill.toFixed(2);
+      h += ' → Exit D+'+r.exitDay+' @ ₹'+r.exitPrice.toFixed(2);
+      h += ' <b style="color:'+pnlColor+'">('+(r.pnlPct>=0?'+':'')+r.pnlPct.toFixed(2)+'%)</b>';
+      h += '</div>';
+      var badge = r.exitReason === 'TARGET'
+        ? '<span style="color:#047857;font-weight:bold">🎯 TARGET</span>'
+        : (r.exitReason === 'SL' ? '<span style="color:#dc2626;font-weight:bold">🛑 SL</span>'
+           : '<span style="color:#1d4ed8;font-weight:bold">⏱ END</span>');
+      h += '<div style="font-size:12px;color:#64748b;margin-top:2px">'+badge
+        +' · Max in-trade: +'+r.maxGainPct.toFixed(1)+'% / '+r.maxLossPct.toFixed(1)+'%</div>';
+    } else {
+      h += '<div style="font-size:13px;margin-top:2px;color:#64748b">';
+      if(r.lateTrigger) h += '⏰ Late trigger (D+3+) — skipped';
+      else if(r.gapMissed) h += '⚠️ Gap-up — entry miss';
+      else h += '⚪ Entry trigger ન થયું';
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+
+  el.innerHTML = h;
+}
+
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly','');
+  ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  var ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){ ok = false; }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function copyBacktestResults(){
+  var data = lastBacktestData;
+  if(!data){ alert('પહેલા Backtest ચલાવો'); return; }
+
+  var bt = data.results || [];
+  var triggered = bt.filter(function(r){return r.triggered && r.pnlPct !== null;});
+  var winners = triggered.filter(function(r){return r.pnlPct > 0;});
+  var targets = triggered.filter(function(r){return r.exitReason === 'TARGET';});
+  var sls = triggered.filter(function(r){return r.exitReason === 'SL';});
+  var ends = triggered.filter(function(r){return r.exitReason === 'END';});
+  var noTrig = bt.filter(function(r){return !r.triggered;});
+  var late = bt.filter(function(r){return r.lateTrigger;});
+
+  var totalPnl = 0;
+  for(var i=0;i<triggered.length;i++) totalPnl += triggered[i].pnlPct;
+  var avgPnl = triggered.length ? totalPnl / triggered.length : 0;
+  var winRate = triggered.length ? Math.round(winners.length/triggered.length*100) : 0;
+
+  var cum = 0, peak = 0, maxDD = 0;
+  for(var d=0; d<triggered.length; d++){
+    cum += triggered[d].pnlPct;
+    if(cum > peak) peak = cum;
+    var dd = cum - peak;
+    if(dd < maxDD) maxDD = dd;
+  }
+
+  var L = [];
+  L.push('=== NSE BACKTEST RESULTS (v4 — Bull Flag + D+2 deadline) ===');
+  L.push('Cutoff Date   : ' + data.cutoff);
+  L.push('Forward Days  : ' + data.forwardDays);
+  L.push('Target / SL   : +' + data.targetPct + '% / ' + data.slPct + '%');
+  L.push('Max Gap %     : ' + data.gapPct);
+  L.push('Pattern Filter: ' + data.patternFilter);
+  L.push('D+2 Deadline  : ACTIVE');
+  L.push('Generated At  : ' + new Date(data.generatedAt).toLocaleString());
+  L.push('Total Scanned : ' + data.scanned);
+  L.push('Filtered      : ' + bt.length);
+  L.push('');
+  L.push('--- SUMMARY ---');
+  L.push('Triggered       : ' + triggered.length + ' / ' + bt.length);
+  L.push('TARGET exits    : ' + targets.length + ' (each +' + data.targetPct + '%)');
+  L.push('SL exits        : ' + sls.length + ' (each ' + data.slPct + '%)');
+  L.push('END exits       : ' + ends.length);
+  L.push('Win Rate        : ' + winRate + '%');
+  L.push('Avg P&L/trade   : ' + (avgPnl>=0?'+':'') + avgPnl.toFixed(2) + '%');
+  L.push('Total Sum P&L   : ' + (totalPnl>=0?'+':'') + totalPnl.toFixed(2) + '%');
+  L.push('Max DD (seq)    : ' + maxDD.toFixed(2) + '%');
+  L.push('No-trigger      : ' + noTrig.length);
+  L.push('Late D+3+       : ' + late.length);
+  L.push('');
+  if(data.funnel){
+    L.push('--- FILTER FUNNEL ---');
+    L.push('Total Analyzed        : ' + data.funnel[0]);
+    L.push('Pattern Detected(1+)  : ' + data.funnel[1]);
+    L.push('Passed MA20 (2+)      : ' + data.funnel[2]);
+    L.push('Passed Vol 2x (3+)    : ' + data.funnel[3]);
+    L.push('Passed Entry Dist(4+) : ' + data.funnel[4]);
+    L.push('Passed Turnover(5+)   : ' + data.funnel[5]);
+    L.push('Passed VolTrend (6)   : ' + data.funnel[6]);
+    L.push('');
+  }
+  L.push('--- DETAILS ---');
+  for(var j=0;j<bt.length;j++){
+    var r = bt[j];
+    var line = (j+1) + '. ' + r.symbol + ' | ' + r.pattern + ' | Entry ₹' + r.entry.toFixed(2);
+    if(r.triggered){
+      line += ' | Trig D+' + r.triggerDay + ' @ ₹' + r.entryFill.toFixed(2);
+      line += ' → Exit D+' + r.exitDay + ' @ ₹' + r.exitPrice.toFixed(2);
+      line += ' | PnL ' + (r.pnlPct>=0?'+':'') + r.pnlPct.toFixed(2) + '%';
+      line += ' [' + r.exitReason + ']';
+      line += ' | inTrade +' + r.maxGainPct.toFixed(1) + '/' + r.maxLossPct.toFixed(1) + '%';
+    } else {
+      if(r.lateTrigger) line += ' | LATE-TRIGGER (D+3+)';
+      else if(r.gapMissed) line += ' | GAP-MISSED';
+      else line += ' | NOT-TRIGGERED';
+    }
+    L.push(line);
+  }
+
+  var text = L.join('\n');
+  function done(ok){
+    if(ok) alert('✅ Copy થયું!\n\n' + bt.length + ' trades');
+    else alert('❌ Copy fail.');
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ done(true); }).catch(function(){ done(fallbackCopy(text)); });
+  } else {
+    done(fallbackCopy(text));
+  }
+}
+
+/* ═══ Symbol Debug ═══ */
+function patternDiagnostics(arr){
+  var out=[], n=arr.length, last=arr[n-1];
+  if(n>=25){
+    var lb=arr.slice(n-21,n-1), mh=0, sv=0;
+    for(var i=0;i<lb.length;i++){ if(lb[i].h>mh) mh=lb[i].h; sv+=lb[i].v; }
+    var av=sv/lb.length;
+    var c1=last.c>mh, c2=last.v>av*2;
+    out.push({name:'20D બ્રેકઆઉટ', pass:c1&&c2, lines:[
+      '20-day high: '+fmtPrice(mh)+' | Close: '+fmtPrice(last.c)+' → '+(c1?'✅':'❌'),
+      'Avg Vol ×2: '+fmtVol(av*2)+' | Vol: '+fmtVol(last.v)+' → '+(c2?'✅':'❌')]});
+  } else out.push({name:'20D બ્રેકઆઉટ', pass:false, lines:['ઓછામાં ઓછા 25 દિવસ']});
+
+  if(n>=15){
+    var fs=n-8; if(fs<1)fs=1;
+    var ps=fs-7; if(ps<0)ps=0;
+    if(fs>ps){
+      var pb=arr[ps].c, pt=arr[fs-1].c;
+      var gain=((pt-pb)/pb)*100, gainOk=gain>=5&&gain<=35;
+      var lines=['ધ્રુવ: '+gain.toFixed(1)+'% → '+(gainOk?'✅ 5-35%':'❌')];
+      if(gainOk){
+        var cons=arr.slice(fs), priorCons=cons.slice(0,cons.length-1);
+        if(priorCons.length>=1 && cons.length>=2 && cons.length<=10){
+          var mx=0, mn=1e9;
+          for(var j=0;j<priorCons.length;j++){ if(priorCons[j].c<mn) mn=priorCons[j].c; }
+          for(var jp=0;jp<priorCons.length;jp++){ if(priorCons[jp].c>mx) mx=priorCons[jp].c; }
+          var cr=((mx-mn)/mn)*100, crOk=cr<8;
+          lines.push('કન્સોલિ: '+cr.toFixed(1)+'% → '+(crOk?'✅':'❌'));
+          out.push({name:'બુલ ફ્લેગ', pass:gainOk&&crOk, lines:lines});
+        } else out.push({name:'બુલ ફ્લેગ', pass:false, lines:lines});
+      } else out.push({name:'બુલ ફ્લેગ', pass:false, lines:lines});
+    } else out.push({name:'બુલ ફ્લેગ', pass:false, lines:['પૂરતા દિવસ નથી']});
+  } else out.push({name:'બુલ ફ્લેગ', pass:false, lines:['ઓછામાં ઓછા 15 દિવસ']});
+
+  if(n>=3){
+    var v1=arr[n-3].v, v2=arr[n-2].v, v3=arr[n-1].v;
+    var vtOk = computeVolTrendOk(v1, v2, v3);
+    out.push({name:'Volume 3-દિવસ trend', pass:vtOk,
+      lines:['Vol: '+fmtVol(v1)+' → '+fmtVol(v2)+' → '+fmtVol(v3),
+        'Rule v3≥v2≥v1 → '+(vtOk?'✅':'❌')]});
+  }
+  return out;
+}
+
+async function checkSymbolDebug(){
+  var q = $('checkSymInput').value.trim().toUpperCase();
+  var box = $('checkSymResult');
+  if(!q){ box.innerHTML='<span style="color:#dc2626">Symbol લખો</span>'; return; }
+  if(loadedDays.length<25){
+    box.innerHTML='<span style="color:#dc2626">25 દિવસ જોઈએ. હાલ '+loadedDays.length+'.</span>';
+    return;
+  }
+  box.innerHTML='<span style="color:#64748b">ચેક...</span>';
+  try{
+    REQUIRE_VOL_TREND = $('volTrendToggle').checked;
+    var keys=await getAllKeys(); keys.sort();
+    var all=[];
+    for(var i=0;i<keys.length;i++){ var d=await getDay(keys[i]); if(d) all.push(d); }
+    all.sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+    var latestDate = all.length ? all[all.length-1].date : null;
+
+    var matchedSym = null;
+    for(var e1=0; e1<all.length && !matchedSym; e1++){
+      for(var s1 in all[e1].stocks){ if(s1.toUpperCase() === q){ matchedSym = s1; break; } }
+    }
+    if(!matchedSym){
+      for(var e2=0; e2<all.length && !matchedSym; e2++){
+        for(var s2 in all[e2].stocks){ if(s2.toUpperCase().indexOf(q) !== -1){ matchedSym = s2; break; } }
+      }
+    }
+    if(!matchedSym){ box.innerHTML='<span style="color:#dc2626">"'+q+'" મળ્યો નથી.</span>'; return; }
+
+    var arr=[];
+    for(var j=0;j<all.length;j++){
+      var s = all[j].stocks[matchedSym];
+      if(s) arr.push({date:all[j].date,o:s.o,h:s.h,l:s.l,c:s.c,v:s.v,s:s.s});
+    }
+    if(arr.length===0){ box.innerHTML='<span style="color:#dc2626">ખાલી.</span>'; return; }
+    q = matchedSym.toUpperCase();
+    arr.sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+    var lastBar=arr[arr.length-1], lastC=lastBar.c;
+
+    var h='<div style="font-size:13px">';
+    h+='<div class="data-line"><span class="lbl">Symbol</span><span class="val">'+q+'</span></div>';
+    h+='<div class="data-line"><span class="lbl">દિવસો</span><span class="val">'+arr.length+'</span></div>';
+    h+='<div class="data-line"><span class="lbl">છેલ્લો</span><span class="val">'+lastBar.date+' ('+fmtPrice(lastC)+')</span></div>';
+
+    var tail = arr.slice(Math.max(0, arr.length-10));
+    h+='<div style="margin-top:8px;font-weight:bold;color:#1e40af">છેલ્લા 10 દિવસ:</div>';
+    for(var ti=0; ti<tail.length; ti++){
+      var t=tail[ti];
+      var chg = ti>0 ? ((t.c - tail[ti-1].c)/tail[ti-1].c*100) : 0;
+      var chgTxt = ti>0 ? ((chg>=0?'+':'')+chg.toFixed(2)+'%') : '';
+      var cc = chg < -10 ? '#dc2626' : (chg > 10 ? '#047857' : '#64748b');
+      var warn = (ti>0 && Math.abs(chg)>15) ? ' ⚠️' : '';
+      h+='<div class="data-line"><span class="lbl">'+t.date+'</span><span class="val" style="color:'+cc+'">₹'+t.c.toFixed(2)+' '+chgTxt+warn+'</span></div>';
+    }
+
+    if(lastBar.date !== latestDate){
+      h+='<div class="warn-line red">❌ છેલ્લો data ('+lastBar.date+') ≠ scan date ('+latestDate+')</div></div>';
+      box.innerHTML=h; return;
+    }
+    if(skippedMap[q]) h+='<div class="warn-line amber">⚠️ Skip ('+skippedMap[q]+')</div>';
+
+    var filterBlocked = false;
+    if(indexMap && !indexMap[q]){ h+='<div class="warn-line red">❌ Filter માં નથી</div>'; filterBlocked = true; }
+    if(!indexMap && EXCLUDE_RE.test(q)){ h+='<div class="warn-line red">❌ ETF regex બાકાત</div>'; filterBlocked = true; }
+    if(lastC<MIN_PRICE) h+='<div class="warn-line red">⚠️ ભાવ ઓછો</div>';
+
+    var pats=detectPatterns(arr);
+    pats = filterPatterns(pats);
+    if(pats.length===0){
+      h+='<div style="color:#dc2626;margin:6px 0;font-weight:bold">કોઈ pattern નથી (filter પ્રમાણે):</div>';
+      var diag=patternDiagnostics(arr);
+      for(var di=0;di<diag.length;di++){
+        var dp=diag[di];
+        h+='<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #cbd5e1">';
+        h+='<div style="font-weight:bold;color:'+(dp.pass?'#047857':'#1e40af')+'">'+dp.name+(dp.pass?' ✅':'')+'</div>';
+        for(var dl=0;dl<dp.lines.length;dl++) h+='<div style="font-size:12px;color:#475569;margin-top:2px">'+dp.lines[dl]+'</div>';
+        h+='</div>';
+      }
+    } else {
+      for(var pi=0;pi<pats.length;pi++){
+        pats[pi].distPct = ((lastC - pats[pi].entry) / pats[pi].entry) * 100;
+        pats[pi].volRatio = pats[pi].reqVol > 0 ? (pats[pi].lastVol / pats[pi].reqVol) : 0;
+        pats[pi].turnover = (pats[pi].avgVol || 0) * lastC;
+      }
+      var lookback = Math.min(40, arr.length);
+      var recent = arr.slice(arr.length - lookback);
+      var runupPct = 0, runMinLow = 1e18;
+      for(var ri=0; ri<recent.length; ri++){
+        if(recent[ri].l > 0 && recent[ri].l < runMinLow) runMinLow = recent[ri].l;
+        if(runMinLow < 1e18 && recent[ri].h > runMinLow){
+          var rr = ((recent[ri].h - runMinLow) / runMinLow) * 100;
+          if(rr > runupPct) runupPct = rr;
+        }
+      }
+      var ma20=null;
+      if(arr.length>=20){
+        var maSum=0;
+        for(var mi=arr.length-20; mi<arr.length; mi++) maSum+=arr[mi].c;
+        ma20=maSum/20;
+      }
+      var trendOk = ma20!==null && lastC > ma20;
+      var volTrendOk=false;
+      var vv1=0, vv2=0, vv3=0;
+      if(arr.length>=3){
+        vv1=arr[arr.length-3].v; vv2=arr[arr.length-2].v; vv3=arr[arr.length-1].v;
+        volTrendOk = computeVolTrendOk(vv1, vv2, vv3);
+      }
+      var rTemp={trendOk:trendOk, runupPct:runupPct, volTrendOk:volTrendOk};
+
+      h+='<div class="data-line"><span class="lbl">MA20</span><span class="val">'+(ma20?fmtPrice(ma20):'—')+'</span></div>';
+      h+='<div class="data-line"><span class="lbl">Close&gt;MA20</span><span class="val">'+(trendOk?'✅':'❌')+'</span></div>';
+      h+='<div class="data-line"><span class="lbl">Run-up</span><span class="val">'+runupPct.toFixed(1)+'%</span></div>';
+      h+='<div class="data-line"><span class="lbl">VolTrend OK</span><span class="val">'+(volTrendOk?'✅':'❌')+'</span></div>';
+
+      for(var pk=0;pk<pats.length;pk++){
+        var p=pats[pk];
+        h+='<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #cbd5e1">';
+        h+='<div style="font-weight:bold;color:#1e40af">'+p.name+'</div>';
+        h+='<div class="data-line"><span class="lbl">Entry</span><span class="val">'+fmtPrice(p.entry)+'</span></div>';
+        h+='<div class="data-line"><span class="lbl">Dist%</span><span class="val">'+p.distPct.toFixed(2)+'%</span></div>';
+        h+='<div class="data-line"><span class="lbl">Vol Ratio</span><span class="val">'+p.volRatio.toFixed(2)+'x</span></div>';
+        var st = patternStage(rTemp, p);
+        var stageNames=['','1: ટ્રેન્ડ','2: Vol<2x','3: Entry બહાર','4: Turnover/Runup','5: VolTrend','6: ✅ pass'];
+        var stageCls = (st===6 && !filterBlocked && lastC>=MIN_PRICE && !skippedMap[q]) ? '#047857' : '#dc2626';
+        h+='<div style="margin-top:4px;font-weight:bold;color:'+stageCls+'">Stage: '+stageNames[st]+'</div>';
+        h+='</div>';
+      }
+    }
+    h+='</div>';
+    box.innerHTML=h;
+  }catch(e){ box.innerHTML='<span style="color:#dc2626">Error: '+e.message+'</span>'; }
+}
+
+async function autoCleanupOldData(){
+  try{
+    var keys = await getAllKeys();
+    if(keys.length <= RETENTION_TRADING_DAYS) return 0;
+    keys.sort();
+    var deleteCount = keys.length - RETENTION_TRADING_DAYS;
+    var deleted = 0;
+    for(var i = 0; i < deleteCount; i++){ await deleteDay(keys[i]); deleted++; }
+    log(''+deleted+' જૂના દિવસો ડિલીટ');
+    return deleted;
+  }catch(e){ log('Cleanup: '+e.message); return 0; }
+}
+
+function renderStats(){
+  setText('statDays',loadedDays.length);
+  if(loadedDays.length>0){
+    var s=loadedDays.slice().sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+    setText('statRange',s[0].date+' થી '+s[s.length-1].date);
+  } else setText('statRange','—');
+  var tot=0;
+  for(var i=0;i<loadedDays.length;i++) tot+=loadedDays[i].count||0;
+  setText('statStocks',tot.toLocaleString());
+  setText('loadedCount',loadedDays.length);
+
+  var dates=[]; for(var j=0;j<loadedDays.length;j++) dates.push(loadedDays[j].date);
+  var missing=findMissing(dates);
+  setText('statMissing',missing.length);
+
+  var ml=$('missingList');
+  if(missing.length===0) ml.innerHTML='<span style="color:#047857;font-weight:bold">બધા દિવસો ઉપલબ્ધ</span>';
+  else{
+    var h='';
+    for(var k=0;k<missing.length;k++) h+='<span class="missing-day">'+missing[k]+'</span>';
+    ml.innerHTML=h;
+  }
+
+  var ll=$('loadedList');
+  if(loadedDays.length===0) ll.innerHTML='<span style="color:#94a3b8">કોઈ ડેટા નથી</span>';
+  else{
+    var sorted=loadedDays.slice().sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+    var h2='';
+    for(var m=0;m<sorted.length;m++) h2+='<span class="loaded-day">'+sorted[m].date+' ('+(sorted[m].count||0)+')</span>';
+    ll.innerHTML=h2;
+  }
+
+  if($('btToggle') && $('btToggle').checked) populateBacktestDates();
+}
+
+function shownResults(){
+  if(!currentResults) return [];
+  var only = $('onlyGreenToggle').checked;
+  return only ? currentResults.filter(function(r){return r.signal && r.signal.status==='green';}) : currentResults;
+}
+function refreshView(){
+  var list = shownResults();
+  renderResults(list);
+  $('exportMspBtn').style.display = list.length>0 ? 'block' : 'none';
+}
+
+function funnelHTML(open){
+  if(!lastFunnel) return '';
+  var f = lastFunnel;
+  var names = ['ચકાસેલા','Pattern','Close>MA20','Vol 2x','Entry Dist','Turnover/Runup',
+    lastVolTrendReq ? 'VolTrend' : 'Final'];
+  var h = '<details'+(open?' open':'')+'><summary>Filter વિગત</summary><div style="margin-top:8px">';
+  for(var i=0;i<names.length;i++) h += '<div class="data-line"><span class="lbl">'+names[i]+'</span><span class="val">'+f[i]+'</span></div>';
+  return h + '</div></details>';
+}
+
+/* ═══ ENHANCED ENTRY GUIDE — CLEAR TIME + PRICE ═══ */
+function entryGuideHTML(pat, r){
+  var entry = pat.entry;
+  var entryMax = entry * 1.03;
+  var target = entry * 1.05;
+  var sl = entry * 0.97;
+  var f = fmtPrice;
+
+  var g = '<div class="entry-guide">';
+  g += '<div class="eg-header">📋 Entry Instructions — આ રીતે ટ્રેડ લો</div>';
+  g += '<div class="eg-body">';
+
+  /* STEP 1: TIME */
+  g += '<div class="eg-box time">';
+  g += '<span class="eg-label"><span class="eg-step-num">1</span>⏰ કઈ વાગ્યે જોવું?</span>';
+  g += '<b>સવારે 9:30 વાગ્યા પછી</b> ભાવ જુઓ. (9:15-9:30 ના ભાવ ખોટા હોય છે, એટલે skip)';
+  g += '</div>';
+
+  /* STEP 2: BUY PRICE */
+  g += '<div class="eg-box buy">';
+  g += '<span class="eg-label"><span class="eg-step-num">2</span>✅ કઈ ભાવમાં ખરીદવું?</span>';
+  g += 'ભાવ <span class="eg-price">'+f(entry)+'</span> થી <span class="eg-price">'+f(entryMax)+'</span> વચ્ચે હોય તો <b>ખરીદો</b>';
+  g += '<br><small style="opacity:.85">(એટલે કે entry price થી 3% ઉપર સુધી)</small>';
+  g += '</div>';
+
+  /* STEP 3: WAIT */
+  g += '<div class="eg-box wait">';
+  g += '<span class="eg-label"><span class="eg-step-num">3</span>⏳ ક્યારે રાહ જોવી?</span>';
+  g += 'ભાવ <span class="eg-price">'+f(entry)+'</span> થી <b>નીચે હોય</b> તો ખરીદવું <b>નહીં</b>. ભાવ આ level ને પાર કરે (cross કરે) ત્યારે જ ખરીદો.';
+  g += '</div>';
+
+  /* STEP 4: SKIP */
+  g += '<div class="eg-box skip">';
+  g += '<span class="eg-label"><span class="eg-step-num">4</span>🚫 ક્યારે skip કરવું?</span>';
+  g += 'ભાવ <span class="eg-price">'+f(entryMax)+'</span> થી <b>ઉપર</b> ખૂલે (gap-up) તો <b>છોડી દો</b>.';
+  g += '<br><small>કારણ: ઊંચા ભાવે entry લેવાથી SL જલદી hit થાય.</small>';
+  g += '</div>';
+
+  /* STEP 5: DEADLINE */
+  g += '<div class="eg-box time">';
+  g += '<span class="eg-label"><span class="eg-step-num">5</span>📅 કેટલા દિવસ રાહ જોવી?</span>';
+  g += '<b>ફક્ત 2 દિવસ</b> (Day 1 અને Day 2). બીજા દિવસે પણ entry ન થાય તો order <b>cancel</b> કરો.';
+  g += '</div>';
+
+  /* STEP 6: TARGET */
+  g += '<div class="eg-box target">';
+  g += '<span class="eg-label"><span class="eg-step-num">6</span>🎯 ક્યારે વેચવું (Profit)?</span>';
+  g += 'Target: <span class="eg-price">'+f(target)+'</span> (+5%)';
+  g += '<br>Enter થયા પછી તરત જ <b>GTT sell order</b> મૂકી દો.';
+  g += '</div>';
+
+  /* STEP 7: SL */
+  g += '<div class="eg-box sl">';
+  g += '<span class="eg-label"><span class="eg-step-num">7</span>🛑 ક્યારે કાપી નાખવું (Loss)?</span>';
+  g += 'Stop Loss: <span class="eg-price">'+f(sl)+'</span> (-3%)';
+  g += '<br>Enter થયા પછી તરત જ <b>GTT stop-loss order</b> મૂકી દો.';
+  g += '</div>';
+
+  /* STEP 8: TIME STOP */
+  g += '<div class="eg-box time">';
+  g += '<span class="eg-label"><span class="eg-step-num">8</span>⏱️ કેટલા દિવસ રાખવું?</span>';
+  g += 'Maximum <b>20 trading days</b>. 20 દિવસમાં ન target ન SL hit ન થાય તો <b>જાતે વેચી નાખો</b> (time stop).';
+  g += '</div>';
+
+  g += '<div class="eg-note">';
+  g += '⚠️ આ ભાવ છેલ્લા BhavCopy close પર આધારિત છે. ';
+  g += 'ખરીદ-વેચની સલાહ નથી. પહેલા paper trade કરો, પછી real money.';
+  g += '</div>';
+
+  g += '</div></div>';
+  return g;
+}
+
+function renderResults(results){
+  var el=$('resultBox');
+  if(!results||results.length===0){
+    var hasAny = currentResults && currentResults.length>0;
+    el.innerHTML='<div class="empty">'+(hasAny?'કોઈ Green card નથી':'કોઈ પેટર્ન મળ્યું નથી')+'</div>'+funnelHTML(!hasAny);
+    return;
+  }
+
+  var gCount=0, yCount=0, rCount=0;
+  for(var ci=0;ci<results.length;ci++){
+    var st = results[ci].signal ? results[ci].signal.status : 'red';
+    if(st==='green') gCount++; else if(st==='yellow') yCount++; else rCount++;
+  }
+
+  var h='<div style="margin-bottom:10px;font-weight:bold;font-size:16px">';
+  h+='<div style="color:#047857">Green: '+gCount+'</div>';
+  if(yCount>0) h+='<div style="color:#d97706;font-size:14px">Yellow: '+yCount+'</div>';
+  if(rCount>0) h+='<div style="color:#dc2626;font-size:14px">Red: '+rCount+'</div>';
+  if(indexMeta) h+='<div style="color:#7c3aed;font-size:12px;margin-top:4px">['+indexMeta.name+']</div>';
+  h+='</div>';
+  h+=funnelHTML(false);
+
+  for(var i=0;i<results.length;i++){
+    var r=results[i];
+    var nseUrl='https://www.google.com/finance/quote/'+encodeURIComponent(r.symbol)+':NSE';
+    var sig = r.signal || {status:'red', score:0, max:6};
+    var rowClass, badgeClass, badgeText;
+    if(sig.status === 'green'){ rowClass = 'result-row sig-green'; badgeClass = 'signal-badge green'; badgeText = 'GREEN ('+sig.score.toFixed(1)+'/'+sig.max+')'; }
+    else if(sig.status === 'yellow'){ rowClass = 'result-row sig-yellow'; badgeClass = 'signal-badge yellow'; badgeText = 'YELLOW ('+sig.score.toFixed(1)+'/'+sig.max+')'; }
+    else { rowClass = 'result-row sig-red'; badgeClass = 'signal-badge red'; badgeText = 'RED ('+sig.score.toFixed(1)+'/'+sig.max+')'; }
+
+    h+='<div class="'+rowClass+'">';
+    h+='<div class="'+badgeClass+'">'+badgeText+'</div>';
+
+    var distPct = (r.distPct !== undefined) ? r.distPct : 0;
+    var distCls, distTxt;
+    if(distPct >= -2 && distPct <= 3){ distCls = 'fresh'; distTxt = 'Entry '+(distPct>=0?'+':'')+distPct.toFixed(1)+'%'; }
+    else if(distPct > 3 && distPct <= 5){ distCls = 'watch'; distTxt = 'Entry +'+distPct.toFixed(1)+'%'; }
+    else if(distPct > 5){ distCls = 'missed'; distTxt = 'Entry +'+distPct.toFixed(0)+'%'; }
+    else { distCls = 'watch'; distTxt = 'Entry '+distPct.toFixed(1)+'%'; }
+
+    h+='<a class="sym-link" href="'+nseUrl+'" target="_blank" rel="noopener">'+r.symbol+'</a>';
+
+    var rp = r.runupPct || 0;
+    if(rp >= 100) h+='<span class="runup-badge high">Run-up +'+rp.toFixed(0)+'%</span>';
+    else if(rp >= 50) h+='<span class="runup-badge mid">Run-up +'+rp.toFixed(0)+'%</span>';
+    else if(rp >= 20) h+='<span class="runup-badge low">Run-up +'+rp.toFixed(0)+'%</span>';
+
+    h+='<span class="dist-badge '+distCls+'">'+distTxt+'</span>';
+    h+=sparklineSVG(r.closes70);
+
+    for(var j=0;j<r.patterns.length;j++) h+='<span class="pattern-tag '+r.patterns[j].cls+'">'+r.patterns[j].name+'</span>';
+
+    var pat = r.patterns[0];
+    h+='<div style="margin-top:10px;padding-top:8px;border-top:1px solid #cbd5e1">';
+    h+='<div class="data-line"><span class="lbl">Entry Price</span><span class="val green">'+fmtPrice(pat.entry)+'</span></div>';
+    if(pat.rangeMin !== undefined){
+      var rCls = pat.distPct >= -2 && pat.distPct <= 3 ? 'fresh' : (pat.distPct > 5 ? 'missed' : 'watch');
+      h+='<div class="range-box '+rCls+'">Entry Range: '+fmtPrice(pat.rangeMin)+' – '+fmtPrice(pat.rangeMax)+'</div>';
+    }
+
+    /* ═══ ENHANCED ENTRY GUIDE ═══ */
+    h += entryGuideHTML(pat, r);
+
+    h+='<div class="data-line"><span class="lbl">Required Vol</span><span class="val blue">'+fmtVol(pat.reqVol)+'</span></div>';
+    h+='<div class="data-line"><span class="lbl">આજનું Vol</span><span class="val">'+fmtVol(pat.lastVol||0)+'</span></div>';
+    h+='<div class="data-line"><span class="lbl">છેલ્લો બંધ</span><span class="val">'+fmtPrice(r.lastClose)+'</span></div>';
+    h+='</div>';
+
+    h+='<div class="note" style="margin-top:8px">છેલ્લો ડેટા: '+r.lastDate+'</div>';
+    h+='<div class="card-actions"><button class="btn danger" data-skip="'+r.symbol+'" style="margin:0;padding:10px;font-size:14px">Skip (7 દિવસ)</button></div>';
+    h+='</div>';
+  }
+  el.innerHTML=h;
+}
+
+async function loadAllDays(){
+  try{
+    var keys=await getAllKeys();
+    loadedDays=[];
+    for(var i=0;i<keys.length;i++){ var d=await getDay(keys[i]); if(d) loadedDays.push({date:d.date,count:d.count||0}); }
+    renderStats();
+  }catch(e){log('load: '+e.message);}
+}
+
+async function handleFiles(files){
+  if(!files||files.length===0) return;
+  var prog=$('progress'),bar=$('progressBar'),fs=$('fileStatus');
+  prog.classList.add('show'); fs.classList.add('show');
+  var added=0,skipped=0,errs=0;
+
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    var pct=Math.round((i/files.length)*100);
+    bar.style.width=pct+'%';
+    bar.textContent='ફાઇલ '+(i+1)+'/'+files.length;
+    fs.textContent=''+(i+1)+'/'+files.length+': '+f.name;
+
+    try{
+      var days=[];
+      if(/\.zip$/i.test(f.name)){
+        days=await processZip(f,function(idx,total){ fs.textContent='ZIP: '+(idx+1)+'/'+total; });
+      } else if(/\.csv$/i.test(f.name)){
+        var txt=await readFileText(f);
+        var d=parseCSV(txt);
+        if(d) days=[d];
+      } else continue;
+
+      if(days.length===0) continue;
+
+      var fAdded=0;
+      for(var j=0;j<days.length;j++){
+        var day=days[j];
+        var ex=await getDay(day.date);
+        if(ex){skipped++;}
+        else{await putDay(day);added++;fAdded++;}
+      }
+    }catch(err){ errs++; log(''+f.name+': '+(err.message||err)); }
+    await new Promise(function(r){setTimeout(r,0);});
+  }
+
+  bar.style.width='100%'; bar.textContent='પૂર્ણ';
+  fs.textContent='+'+added+' ઉમેરાયા, '+skipped+' સ્કિપ, '+errs+' એરર';
+
+  var deleted = await autoCleanupOldData();
+  if(deleted > 0) fs.textContent += ' | '+deleted+' ડિલીટ';
+
+  setTimeout(function(){
+    prog.classList.remove('show');
+    setTimeout(function(){fs.classList.remove('show');},4000);
+  },2000);
+
+  await loadAllDays();
+  checkReminder();
+}
+
+async function handleClear(){
+  if(!confirm('Skip યાદી અને Nifty Filter કાઢી નાખવા? (ભાવકોપી ડેટા હબમાં છે, તે રહેશે)')) return;
+  await clearAll();
+  var skArr=await getAllSkips();
+  for(var i=0;i<skArr.length;i++) await deleteSkip(skArr[i].symbol);
+  await deleteIndexList();
+  indexMap=null; indexMeta=null;
+  renderIndexStatus();
+  skippedMap={};
+  currentResults=[]; lastFunnel=null; lastBacktestData=null;
+  renderStats(); renderSkipList();
+  $('resultBox').innerHTML='';
+  $('btResultBox').innerHTML='';
+  $('exportMspBtn').style.display='none';
+  log('બધો ડેટા સાફ');
+}
+
+function toDDMMYYYY(s){ var p=s.split('-'); return p[2]+'-'+p[1]+'-'+p[0]; }
+function csvEsc(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
+function nextMarketDateAfter(dateStr){
+  var d=parseDate(dateStr); d.setDate(d.getDate()+1);
+  var guard=0;
+  while(!isMarketDay(ymd(d)) && guard<30){ d.setDate(d.getDate()+1); guard++; }
+  return ymd(d);
+}
+
+function exportMSPCsv(){
+  if(!currentResults||currentResults.length===0){alert('પહેલા સ્કેન કરો');return;}
+  var exportList = shownResults();
+  var sorted=loadedDays.slice().sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+  var latest=sorted.length?sorted[sorted.length-1].date:ymd(new Date());
+  var nextDate=nextMarketDateAfter(latest);
+  var nextDateDMY=toDDMMYYYY(nextDate);
+  var portName = nextDateDMY + ' Bull Flag';
+
+  var rows=[['Id','Symbol','Name','Display Symbol','Exchange','Portfolio','Currency',
+    'Shares Owned','Cost Per Share','Commission','Transaction Date','Transaction Time',
+    'Purchase Exchange Rate','Purchase Exchange Currencies','Type','Accounting',
+    'Accounting Execution Ids','Notes','OutgoingCashLink']];
+  var id=1, cnt=0;
+  for(var i=0;i<exportList.length;i++){
+    var r=exportList[i];
+    var readyPats = r.patterns.filter(function(pp){ return pp.ready; });
+    if(readyPats.length===0) continue;
+    var p = readyPats[0];
+    var dispName=r.symbol+' | '+p.name;
+    var sym=r.symbol+'.NS';
+    var rangeTxt = (p.rangeMin !== undefined && p.rangeMax !== undefined)
+      ? 'Entry: Rs.' + p.rangeMin.toFixed(2) + ' – Rs.' + p.rangeMax.toFixed(2)
+      : ('Entry: Rs.' + p.entry.toFixed(2));
+    var sigTxt = '';
+    if(r.signal){
+      var sName = r.signal.status === 'green' ? 'GREEN' : (r.signal.status === 'yellow' ? 'YELLOW' : 'RED');
+      sigTxt = ' | ' + sName + ' (' + r.signal.score.toFixed(1) + '/' + r.signal.max + ')';
+    }
+    rows.push([id++,sym,dispName,'','NSI',portName,'INR','1',p.entry.toFixed(2),'0',
+      nextDateDMY+' GMT+0530','09:30:00','','','Buy','','',
+      p.name+' | '+rangeTxt+sigTxt+' | T:'+(p.entry*1.05).toFixed(2)+' SL:'+(p.entry*0.97).toFixed(2),'']);
+    cnt++;
+  }
+  if(cnt===0){alert('કોઈ તૈયાર સ્ટોક નથી');return;}
+  var csv=rows.map(function(row){return row.map(csvEsc).join(',');}).join('\r\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='BullFlag-Portfolios-'+nextDate+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},3000);
+  log('MSP CSV: '+cnt+' entry');
+}
+
+async function handleScan(){
+  if(!anyPatternEnabled()){ alert('ઓછામાં ઓછું એક pattern select કરો'); return; }
+  if(loadedDays.length<25){
+    alert('ઓછામાં ઓછા 25 દિવસનો ડેટા જોઈએ. હાલ '+loadedDays.length+' છે.');
+    return;
+  }
+  readPatternFilter('scanPatternFilter');
+  var btn=$('scanBtn');
+  btn.disabled=true; btn.textContent='સ્કેન...';
+  await new Promise(function(r){setTimeout(r,80);});
+  try{
+    var keys=await getAllKeys(); keys.sort();
+    var all=[];
+    for(var i=0;i<keys.length;i++){ var d=await getDay(keys[i]); if(d) all.push(d); }
+    await new Promise(function(r){setTimeout(r,80);});
+    lastVolTrendReq = $('volTrendToggle').checked;
+    REQUIRE_VOL_TREND = lastVolTrendReq;
+    var rawResults=scanPatterns(all,25);
+    var results=rawResults.filter(function(r){return !skippedMap[r.symbol];});
+    currentResults=results;
+    refreshView();
+
+    var gCount=0,yCount=0,rCount=0;
+    for(var gi=0;gi<results.length;gi++){
+      var st = results[gi].signal ? results[gi].signal.status : 'red';
+      if(st==='green') gCount++; else if(st==='yellow') yCount++; else rCount++;
+    }
+    log('સ્કેન: '+results.length+' | G'+gCount+' Y'+yCount+' R'+rCount);
+  }catch(e){log('scan error: '+e.message); alert('scan error: '+e.message);}
+  btn.disabled=false; btn.textContent='🔍 પેટર્ન સ્કેન કરો';
+}
+
+function checkReminder(){
+  if(loadedDays.length===0){$('reminderBanner').style.display='none';return;}
+  var sorted=loadedDays.slice().sort(function(a,b){return a.date<b.date?-1:(a.date>b.date?1:0);});
+  var latest=sorted[sorted.length-1].date;
+  var todayStr=ymd(new Date());
+  if(latest>=todayStr){$('reminderBanner').style.display='none';return;}
+  var miss=[],cur=parseDate(latest);
+  cur.setDate(cur.getDate()+1);
+  var today=new Date(); today.setHours(0,0,0,0);
+  while(cur<=today){
+    var s=ymd(cur);
+    if(isMarketDay(s)) miss.push(s);
+    cur.setDate(cur.getDate()+1);
+  }
+  if(miss.length>0){
+    var b=$('reminderBanner');
+    b.style.display='block';
+    b.innerHTML='<b>ધ્યાન!</b> '+miss.length+' દિવસનો ડેટા ખૂટે છે.'
+      +'<br>છેલ્લો લોડ: <b>'+latest+'</b>'
+      +'<br>ખૂટતા: '+miss.slice(-5).join(', ');
+  } else $('reminderBanner').style.display='none';
+}
+
+function checkToday(){
+  var s=lastMarketDay();
+  setText('todayDate',s);
+  var comp=s.replace(/-/g,'');
+  var url='https://nsearchives.nseindia.com/content/cm/BhavCopy_NSE_CM_0_0_0_'+comp+'_F_0000.csv.zip';
+  var a=$('bhavLink');
+  a.href=url; a.textContent=url;
+  var hint = $('todayHint');
+  if(hint){
+    var now = new Date();
+    var todayStr = ymd(now);
+    if(s === todayStr && now.getHours() < 18){
+      hint.style.display='block';
+      hint.textContent='ℹ️ આજની BhavCopy ~18:00 પછી ઉપલબ્ધ.';
+    } else hint.style.display='none';
+  }
+}
+
+async function init(){
+  try{
+    await openDB();
+    if(navigator.storage && navigator.storage.persist){ try{ await navigator.storage.persist(); }catch(e){} }
+    await autoCleanupOldData();
+    await loadAllDays();
+    await loadSkips();
+    renderSkipList();
+    await loadIndexList();
+    checkIndexReminder();
+    checkToday();
+    checkReminder();
+    log('એપ તૈયાર'+(indexMeta?' | '+indexMeta.name+' ('+indexMeta.count+')':''));
+  }catch(e){
+    log('error: '+e.message);
+    alert('એપ લોડ એરર: '+e.message);
+  }
+
+  $('indexInput').addEventListener('change',function(e){
+    var arr=Array.prototype.slice.call(e.target.files||[]);
+    e.target.value='';
+    handleIndexUpload(arr);
+  });
+
+  $('hubReload').addEventListener('click',function(){$('refreshBtn').click();});
+  $('indexUploadBtn').addEventListener('click',function(){$('indexInput').click();});
+  $('qualityBtn').addEventListener('click',loadQualityStocks);
+  $('indexClearBtn').addEventListener('click',handleIndexClear);
+  $('exportMspBtn').addEventListener('click',exportMSPCsv);
+
+  document.body.addEventListener('click',function(e){
+    var sk=e.target.closest('[data-skip]');
+    if(sk){ skipStock(sk.getAttribute('data-skip')); return; }
+    var un=e.target.closest('[data-unskip]');
+    if(un){ unskipStock(un.getAttribute('data-unskip')); return; }
+  });
+
+  ['scanPatternFilter','btPatternFilter'].forEach(function(id){
+    var box = $(id); if(!box) return;
+    box.addEventListener('change',function(e){
+      if(e.target.matches('input[type=checkbox]')) syncPatternFilterUI(id);
+    });
+    syncPatternFilterUI(id);
+  });
+
+  $('btToggle').addEventListener('change',function(){
+    var on = this.checked;
+    $('btPanel').style.display = on ? 'block' : 'none';
+    if(on){
+      populateBacktestDates();
+      $('btPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  });
+  $('btRunBtn').addEventListener('click',runBacktest);
+  $('btCopyBtn').addEventListener('click',copyBacktestResults);
+
+  $('clearBtn').addEventListener('click',handleClear);
+  $('scanBtn').addEventListener('click',handleScan);
+  $('checkSymBtn').addEventListener('click',checkSymbolDebug);
+
+  $('onlyGreenToggle').addEventListener('change',function(){
+    if(currentResults && currentResults.length>0) refreshView();
+  });
+  $('refreshBtn').addEventListener('click',async function(){
+    await autoCleanupOldData();
+    await loadAllDays(); checkToday(); checkReminder();
+    await loadIndexList();
+    checkIndexReminder();
+    if($('btToggle').checked) populateBacktestDates();
+    log('રિફ્રેશ');
+  });
+}
+
+if(document.readyState==='loading')
+  document.addEventListener('DOMContentLoaded',init);
+else init();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(e){});
+  });
+}
+
+})();
+</script>
+</body>
+</html>
