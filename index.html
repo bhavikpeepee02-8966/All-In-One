@@ -99,9 +99,9 @@ function parse(txt,fname){
  const L=txt.split(/\r?\n/);if(L.length<2)return null;
  const H=L[0].split(',').map(x=>x.trim().replace(/"/g,'').toUpperCase());
  const ix=(...n)=>{for(const k of n){const i=H.indexOf(k);if(i>=0)return i}return -1};
- const iS=ix('TCKRSYMB','SYMBOL'),iR=ix('SCTYSRS','SERIES'),iO=ix('OPNPRIC','OPEN'),iH=ix('HGHPRIC','HIGH'),
-  iL=ix('LWPRIC','LOW'),iC=ix('CLSPRIC','CLOSE'),iP=ix('PRVSCLSGPRIC','PREVCLOSE'),
-  iV=ix('TTLTRADGVOL','TOTTRDQTY'),iT=ix('TTLTRFVAL','TOTTRDVAL'),iI=ix('ISIN'),iN=ix('FININSTRMNM'),iD=ix('TRADDT','TIMESTAMP','BIZDT');
+ const iS=ix('TCKRSYMB','SYMBOL'),iR=ix('SCTYSRS','SERIES'),iO=ix('OPNPRIC','OPEN','OPEN_PRICE'),iH=ix('HGHPRIC','HIGH','HIGH_PRICE'),
+  iL=ix('LWPRIC','LOW','LOW_PRICE'),iC=ix('CLSPRIC','CLOSE','CLOSE_PRICE'),iP=ix('PRVSCLSGPRIC','PREVCLOSE','PREV_CLOSE'),
+  iV=ix('TTLTRADGVOL','TOTTRDQTY','TTL_TRD_QNTY'),iT=ix('TTLTRFVAL','TOTTRDVAL'),iTL=ix('TURNOVER_LACS'),iI=ix('ISIN'),iN=ix('FININSTRMNM'),iD=ix('TRADDT','TIMESTAMP','BIZDT','DATE1');
  if(iS<0||iC<0||iO<0||iH<0||iL<0)return null;
  const rows=[],nm={};let date=null;
  for(let i=1;i<L.length;i++){
@@ -112,7 +112,7 @@ function parse(txt,fname){
   const c=+w[iC],o=+w[iO],h=+w[iH],l=+w[iL];
   if(!(c>0&&o>0&&h>0&&l>0))continue;
   if(!date&&iD>=0)date=nd(w[iD]);
-  rows.push([w[iS].trim().replace(/"/g,'').toUpperCase(),se,o,h,l,c,iP>=0?+w[iP]||0:0,iV>=0?+w[iV]||0:0,iT>=0?+w[iT]||0:0,iI>=0?w[iI].trim().replace(/"/g,''):'']);
+  rows.push([w[iS].trim().replace(/"/g,'').toUpperCase(),se,o,h,l,c,iP>=0?+w[iP]||0:0,iV>=0?+w[iV]||0:0,iT>=0?+w[iT]||0:iTL>=0?(+w[iTL]||0)*1e5:0,iI>=0?w[iI].trim().replace(/"/g,''):'']);
   if(iN>=0&&w[iN])nm[rows[rows.length-1][0]]=w[iN].trim();
  }
  date=date||nd(fname);
