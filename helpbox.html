@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="gu"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0f3d75"><title>ખરીદ / Exit મદદ-બોક્સ</title>
+<style>
+:root{--ink:#0f172a;--mut:#64748b;--line:#dbe4f0;--bg:#f3f6fb;--navy:#0f3d75;--g:#15803d;--gbg:#dcfce7;--y:#b45309;--ybg:#fef3c7;--r:#b91c1c;--rbg:#fee2e2;--n:#475569;--nbg:#e8edf4}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font:15px/1.5 system-ui,"Noto Sans Gujarati","Shruti",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--navy);color:#fff;padding:13px 16px}header h1{margin:0;font-size:19px}header small{opacity:.85;font-size:12.5px}
+.dbar{padding:7px 14px;font-size:13px;background:#eaf2ff;border-bottom:1px solid var(--line)}.dbar.warn{background:var(--ybg);color:var(--y);font-weight:600}.dbar.bad{background:var(--rbg);color:var(--r);font-weight:600}
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs button{flex:1;padding:12px 4px;border:0;background:none;font:600 14.5px inherit;font-family:inherit;color:var(--mut);border-bottom:3px solid transparent}
+.tabs button.on{color:var(--navy);border-color:var(--navy)}
+main{max-width:720px;margin:auto;padding:12px}
+section{display:none}section.on{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.card h2{margin:0 0 8px;font-size:16px}
+.f{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0}
+.f span{flex:1}.f input{width:150px;padding:9px;font-size:16px;border:1.5px solid #93c5fd;border-radius:8px;background:#f8fbff;text-align:center}
+.f input.sym{text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+button.go{width:100%;margin-top:8px;padding:13px;border:0;border-radius:10px;font:700 16px inherit;font-family:inherit;color:#fff;background:var(--navy)}
+button.sm.grn{background:#059669}
+button.sm{padding:9px 12px;border:0;border-radius:8px;font:600 14px inherit;font-family:inherit;color:#fff;background:#64748b}
+button.red{background:#dc2626}
+details{margin-top:6px;font-size:13.5px}details summary{cursor:pointer;color:#2563eb;font-weight:600}
+.note{font-size:12.5px;color:var(--mut);margin-top:6px}
+.verdict{border-radius:12px;padding:14px;margin-bottom:12px;border:2px solid}
+.verdict b{display:block;font-size:21px;line-height:1.25}.verdict span{font-size:14px}
+.verdict.buy{background:var(--gbg);border-color:#4ade80;color:var(--g)}.verdict.wait{background:var(--ybg);border-color:#fbbf24;color:var(--y)}
+.verdict.avoid{background:var(--rbg);border-color:#f87171;color:var(--r)}.verdict.nd{background:var(--nbg);border-color:#cbd5e1;color:var(--n)}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0}
+.grid div{background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:7px 8px;font-size:12.5px;color:var(--mut)}.grid b{display:block;font-size:15px;color:var(--ink)}
+.ck{list-style:none;margin:0;padding:0}.ck li{padding:7px 10px;margin:5px 0;border-radius:8px;border-left:4px solid;font-size:14px}
+.ck li.g{background:#f0fdf4;border-color:#22c55e}.ck li.y{background:#fffbeb;border-color:#f59e0b}.ck li.r{background:#fef2f2;border-color:#ef4444}
+.lv{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}.lv div{border-radius:8px;padding:8px 10px;font-size:13px}.lv b{display:block;font-size:16px}
+.lv .e{background:#eff6ff}.lv .s{background:var(--rbg);color:var(--r)}.lv .t{background:var(--gbg);color:var(--g)}
+.qty{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:14px}.qty p{margin:3px 0}
+.again{background:#eff6ff;border-left:4px solid #3b82f6;border-radius:8px;padding:9px 11px;font-size:14px;margin-top:8px}
+.disc{font-size:12px;color:var(--mut);margin:14px 2px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:24px;font-weight:700;z-index:9;max-width:90%;text-align:center}
+.bar{height:10px;background:#dbe4f0;border-radius:6px;overflow:hidden;margin-top:8px}.bar div{height:100%;width:0;background:var(--g);transition:width .2s}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{border:1.5px solid #93c5fd;background:#eff6ff;color:var(--navy);border-radius:20px;padding:6px 12px;font:700 13.5px inherit;font-family:inherit}.chip small{display:block;font-weight:400;font-size:11px;color:var(--mut)}.nm{font-size:13px;font-weight:600;margin-bottom:2px;opacity:.9}
+.rs{display:grid;grid-template-columns:1fr;gap:8px;margin:8px 0}.rs .k,.rs .w{border-radius:10px;padding:9px 11px;font-size:13.5px}.rs .k{background:#f0fdf4;border:1px solid #bbf7d0}.rs .w{background:#fffbeb;border:1px solid #fde68a}.rs b{display:block;margin-bottom:3px}.rs ul{margin:0;padding-left:18px}.rs li{margin:2px 0}
+.lad{margin:6px 0}.lad div{display:flex;gap:10px;align-items:center;padding:7px 10px;margin:4px 0;border-radius:8px;border-left:5px solid;font-size:13.5px}.lad div b{min-width:92px;font-size:15px}
+.lad .g{background:#f0fdf4;border-color:#22c55e}.lad .y{background:#fffbeb;border-color:#f59e0b}.lad .r{background:#fef2f2;border-color:#ef4444}.lad .n{background:#f1f5f9;border-color:#94a3b8}
+.tom{background:#eff6ff;border-left:4px solid #3b82f6;border-radius:8px;padding:9px 11px;font-size:14px;margin:8px 0 12px}
+.yc{border:1.5px solid var(--line);border-radius:12px;padding:11px;margin:10px 0;background:#fff}.yc.buy{border-color:#86efac}.yc.wait{border-color:#fcd34d}.yc.avoid{border-color:#fca5a5}
+.yh{display:flex;justify-content:space-between;align-items:center;gap:8px}.yh b{font-size:17px}.ys{font-size:13px;color:var(--mut);margin-top:2px}
+.bd{padding:3px 10px;border-radius:20px;font-size:12.5px;font-weight:700;text-align:right}.bd.buy{background:var(--gbg);color:var(--g)}.bd.wait{background:var(--ybg);color:var(--y)}.bd.avoid{background:var(--rbg);color:var(--r)}.bd.nd{background:var(--nbg);color:var(--n)}
+.chg{background:#fef3c7;border-radius:8px;padding:5px 9px;font-size:13px;font-weight:700;margin-top:6px;color:#92400e}
+.yb{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.ysum p{margin:5px 0;font-size:14.5px}
+.tabs button{font-size:13.5px}
+.rules{font-size:13px}.rules li{margin:3px 0}
+</style></head><body>
+<header><h1>🧭 ખરીદ / Exit મદદ-બોક્સ</h1><small>NSE code અને qty લખો · Bhavcopy ડેટા પરથી ચેકલિસ્ટ · ઑફલાઇન પણ ચાલે</small></header>
+<div class="dbar" id="dbar">ડેટા લોડ થાય છે…</div>
+<div class="tabs"><button data-t="buy" class="on">🛒 ખરીદ મદદ</button><button data-t="exit">🚪 Exit મદદ</button><button data-t="yadi">📋 મારી યાદી</button><button data-t="data">📂 ડેટા</button></div>
+<main>
+<section id="t-buy" class="on">
+<div class="card"><h2>કંપની અને qty</h2>
+<div class="f"><span>NSE code</span><input class="sym" id="bSym" list="symList" placeholder="જેમ કે TATAMOTORS" autocomplete="off" autocapitalize="characters"></div>
+<div class="f"><span>કેટલા શેર લેવા વિચાર્યા</span><input type="number" id="bQty" inputmode="numeric" min="1" placeholder="ઉ.દા. 100"></div>
+<div class="f"><span>ભાવ ₹ (ખાલી = છેલ્લો close)</span><input type="number" id="bPx" inputmode="decimal" step="0.05" placeholder="ઑપ્શનલ"></div>
+<details><summary>⚙️ મૂડી અને જોખમ (qty સલાહ માટે)</summary>
+<div class="f"><span>કુલ મૂડી ₹</span><input type="number" id="sCap" inputmode="numeric" placeholder="ઉ.દા. 500000"></div>
+<div class="f"><span>એક trade માં જોખમ %</span><input type="number" id="sRisk" inputmode="decimal" step="0.25" value="1"></div>
+<div class="f"><span>એક શેરમાં વધુમાં વધુ % મૂડી</span><input type="number" id="sMax" inputmode="decimal" value="20"></div>
+<div class="note">મૂડી ખાલી રાખશો તો qty ની સલાહ ફક્ત liquidity પરથી મળશે.</div></details>
+<button class="go" id="bGo">🔍 તપાસો</button></div>
+<div id="bOut"></div>
+</section>
+<section id="t-exit">
+<div class="card"><h2>તમારી પાસે પહેલેથી છે?</h2>
+<div class="f"><span>NSE code</span><input class="sym" id="xSym" list="symList" placeholder="જેમ કે TATAMOTORS" autocomplete="off" autocapitalize="characters"></div>
+<div class="f"><span>તમારો ખરીદ ભાવ ₹</span><input type="number" id="xBuy" inputmode="decimal" step="0.05"></div>
+<div class="f"><span>શેર સંખ્યા (ઑપ્શનલ)</span><input type="number" id="xQty" inputmode="numeric"></div>
+<div class="f"><span>ખરીદ તારીખ (ઑપ્શનલ)</span><input type="date" id="xDate"></div>
+<div class="note">તારીખ નાખશો તો trailing stop ખરીદ પછીના ઊંચા ભાવથી નક્કી થશે. ન નાખો તો છેલ્લા 20 દિવસનો ઊંચો ભાવ લેવાશે.</div>
+<button class="go" id="xGo">🔍 Exit તપાસો</button></div>
+<div id="xOut"></div>
+</section>
+<section id="t-yadi">
+<div class="card ysum" id="ySum"></div>
+<div class="card"><h2>💼 મારા શેર (લીધેલા)</h2><div id="yHold"></div></div>
+<div class="card"><h2>📌 Watchlist (લેવા વિચારેલા)</h2><div id="yWatch"></div></div>
+<div class="card"><h2>➕ શેર ઉમેરો</h2>
+<div class="f"><span>NSE code</span><input class="sym" id="yS" list="symList" placeholder="TATAMOTORS" autocomplete="off" autocapitalize="characters"></div>
+<div class="f"><span>ખરીદ ભાવ ₹ (મારા શેર માટે)</span><input type="number" id="yP" inputmode="decimal" step="0.05"></div>
+<div class="f"><span>શેર સંખ્યા</span><input type="number" id="yQ" inputmode="numeric"></div>
+<div class="f"><span>ખરીદ તારીખ</span><input type="date" id="yD"></div>
+<div class="yb"><button class="sm grn" id="yAddH">💼 મારા શેરમાં</button><button class="sm" id="yAddW">📌 Watchlist માં</button></div>
+<div class="note">રોજ સાંજે નવો Bhavcopy ઉમેરશો એટલે અહીં દરેક શેરની કાલ માટેની કાર્યવાહી આપમેળે આવી જશે. ખરીદ તારીખ સાચી નાખશો તો trailing stop ચોક્કસ બનશે.</div></div>
+<div class="card"><h2>💾 બેકઅપ</h2><div class="note" style="margin:0 0 8px">યાદી ફક્ત આ browser માં સેવ છે. Chrome નો site-data સાફ કરો તો જતી રહે, એટલે અવારનવાર બેકઅપ કૉપી કરી રાખો.</div>
+<div class="yb"><button class="sm" id="yExp">📤 બેકઅપ કૉપી</button><button class="sm" id="yImp">📥 પાછું લાવો</button></div></div>
+</section>
+<section id="t-data">
+<div class="card"><h2>📂 Bhavcopy ડેટા</h2>
+<div class="note" style="margin:0 0 8px">ભાવકોપી હવે <b>ડેટા હબ</b> માં નાખો. આ એપ ત્યાંથી છેલ્લા 500 દિવસ આપોઆપ વાંચે છે.</div>
+<a class="go" href="index.html" style="display:block;text-align:center;text-decoration:none;margin-top:0">📊 ડેટા હબ ખોલો</a>
+<button class="sm" id="rl" style="margin-top:12px">🔄 હબમાંથી ડેટા ફરી લોડ</button></div>
+<div class="card"><h2>📋 ચેકલિસ્ટના નિયમો</h2>
+<ul class="rules" id="rules"></ul></div>
+</section>
+<div class="disc">⚠️ આ નિયમ-આધારિત ચેકલિસ્ટ છે, નાણાકીય સલાહ નથી. ડેટા end-of-day Bhavcopy નો છે. Results, સમાચાર, promoter/બ્લોક ડીલ અને લાઈવ ભાવ અલગથી જુઓ. નિર્ણય અને જોખમ તમારું.</div>
+</main>
+<datalist id="symList"></datalist>
+<script src="db.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const toast=m=>{const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)};
+const fm=x=>'₹'+(+x).toLocaleString('en-IN',{maximumFractionDigits:2,minimumFractionDigits:2});
+const pc=(x,d=1)=>(x>=0?'+':'')+x.toFixed(d)+'%';
+const dmy=ds=>ds.slice(8,10)+'-'+ds.slice(5,7)+'-'+ds.slice(0,4);
+/* ================= ડેટા સ્ટોર (દરરોજની એક record) ================= */
+let DAYS=[];const SER={EQ:0,BE:1,BZ:2},SERN=['EQ','BE','BZ'];
+const LOAD_DAYS=500; /* હબમાંથી છેલ્લા કેટલા દિવસ લોડ કરવા */
+const tick=()=>new Promise(r=>setTimeout(r));
+function pack(d,x){const n=x.length,f=new Float64Array(n*7),s=new Array(n);for(let i=0;i<n;i++){const r=x[i],j=i*7;s[i]=r.s;f[j]=r.o;f[j+1]=r.h;f[j+2]=r.l;f[j+3]=r.c;f[j+4]=r.p;f[j+5]=r.v;f[j+6]=r.z}return{k:d,n,s,f}}
+let NAMES={d:'',map:{}};
+async function load(){
+ const ds=(await MarketDB.dates()).slice(-LOAD_DAYS);const out=[];let n=0;
+ for(const d of ds){
+  const x=await MarketDB.getDay(d);if(!x)continue;
+  const a=[],seen=new Set();
+  for(const w of x.rows){const z=SER[w[1]];if(z===undefined)continue;const c=w[5],h=w[3],p=w[6];if(!(c>0&&h>0&&p>0)||seen.has(w[0]))continue;seen.add(w[0]);a.push({s:w[0],o:w[2],h,l:w[4],c,p,v:w[7],z})}
+  out.push(pack(d,a));
+  if(++n%25===0){$('dbar').className='dbar';$('dbar').textContent='📂 ડેટા લોડ '+n+' / '+ds.length;await tick()}
+ }
+ DAYS=out;
+ const nr=await MarketDB.getNames();NAMES=nr?{d:nr.d,map:nr.map}:{d:'',map:{}};
+ dataBar();fillList('');renderYadi()
+}
+const nameOf=s=>NAMES.map[s]||'';
+let P={hold:[],watch:[]};try{const x=JSON.parse(localStorage.getItem('bhavhelp_port_v1')||'null');if(x&&Array.isArray(x.hold)&&Array.isArray(x.watch))P=x}catch(e){}
+const saveP=()=>{try{localStorage.setItem('bhavhelp_port_v1',JSON.stringify(P))}catch(e){}};
+const todayS=()=>{const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')};
+const ACTL={exit:'🚪 Exit',alert:'⚠️ જોખમ',part:'💰 અડધું બુક',caution:'⚠️ સાવધાન',hold:'✅ હોલ્ડ',buy:'✅ લઈ શકાય',wait:'⏳ રાહ',avoid:'❌ ન લો'};
+const reasonsHtml=(keep,not,kt,nt)=>'<div class="rs"><div class="k"><b>'+kt+'</b>'+(keep.length?'<ul>'+keep.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'<span class="note">કંઈ નથી</span>')+'</div><div class="w"><b>'+nt+'</b>'+(not.length?'<ul>'+not.map(x=>'<li>'+x+'</li>').join('')+'</ul>':'<span class="note">કંઈ નથી</span>')+'</div></div>';
+const ladderHtml=rows=>'<div class="lad">'+rows.map(r=>'<div class="'+r.c+'"><b>'+(r.p!=null?fm(r.p):'—')+'</b><span>'+r.x+'</span></div>').join('')+'</div>';
+function showTab(t){document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x.dataset.t===t));document.querySelectorAll('section').forEach(x=>x.classList.toggle('on',x.id==='t-'+t))}
+$('rl').onclick=async()=>{toast('📂 ડેટા લોડ…');try{await load();toast('✅ ડેટા ફરી લોડ થયો')}catch(e){alert('ભૂલ: '+e.message)}};
+function dataBar(){const b=$('dbar');if(!DAYS.length){b.className='dbar bad';b.textContent='⚠️ ડેટા નથી. ડેટા હબમાં Bhavcopy ઉમેરો.';return}
+const last=DAYS[DAYS.length-1].k,t=new Date(),ts=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'),gap=Math.round((new Date(ts)-new Date(last))/864e5);
+b.className='dbar'+(gap>4?' warn':'');b.textContent='📅 છેલ્લો ડેટા '+dmy(last)+' · '+DAYS.length+' દિવસ'+(gap>4?' · જૂનો છે, નવો Bhavcopy ઉમેરો':'')+(DAYS.length<60?' · 60 થી ઓછા દિવસ, ચેકલિસ્ટ ઓછું ભરોસાપાત્ર':'')}
+/* ================= શેરનો ઇતિહાસ અને ગણતરી ================= */
+function norm(s){return (s||'').trim().toUpperCase().replace(/^NSE:/,'').replace(/\.(NS|NSE)$/,'').replace(/\s+/g,'')}
+function sugg(sym,raw){const t=(raw||sym).toUpperCase().replace(/\s+/g,' ').trim(),last=DAYS[DAYS.length-1];if(!last)return'';const out=[],seen=new Set(),pre=sym.slice(0,Math.min(4,sym.length));
+for(let i=0;i<last.s.length&&out.length<8;i++){const x=last.s[i];if(x===sym||seen.has(x))continue;if(pre.length>=2&&x.startsWith(pre)){seen.add(x);out.push(x)}}
+if(t.length>=3)for(const x in NAMES.map){if(out.length>=8)break;if(x!==sym&&!seen.has(x)&&NAMES.map[x].toUpperCase().includes(t)){seen.add(x);out.push(x)}}
+return out.length?'<div class="again"><b>🔎 શું તમે આમાંથી કોઈ શેર શોધો છો? ક્લિક કરો</b><div class="chips">'+out.map(x=>'<button class="chip" data-s="'+x+'">'+x+(nameOf(x)?'<small>'+nameOf(x)+'</small>':'')+'</button>').join('')+'</div></div>':''}
+function series(sym){const a=[];for(const d of DAYS){const i=d.s.indexOf(sym);if(i<0)continue;const j=i*7,f=d.f;a.push({d:d.k,o:f[j],h:f[j+1],l:f[j+2],c:f[j+3],p:f[j+4],v:f[j+5],z:f[j+6]})}return a}
+function fillList(q){const dl=$('symList');dl.innerHTML='';if(!DAYS.length||q.length<1)return;const s=DAYS[DAYS.length-1].s,out=[];for(let i=0;i<s.length&&out.length<25;i++)if(s[i].startsWith(q))out.push(s[i]);dl.innerHTML=out.map(x=>'<option value="'+x+'">').join('')}
+for(const id of['bSym','xSym'])$(id).addEventListener('input',e=>fillList(norm(e.target.value)));
+const circ=r=>{const p=(r.c/r.p-1)*100,t=7.5/r.p+.1;for(const b of[2,5,10,20]){if(Math.abs(p-b)<=t&&r.c>=r.h-.005)return 1;if(Math.abs(p+b)<=t&&r.c<=r.l+.005)return -1}return 0};
+function rsi(c,k=14){if(c.length<k+1)return null;let g=0,l=0;for(let i=1;i<=k;i++){const d=c[i]-c[i-1];d>=0?g+=d:l-=d}g/=k;l/=k;for(let i=k+1;i<c.length;i++){const d=c[i]-c[i-1];g=(g*(k-1)+(d>0?d:0))/k;l=(l*(k-1)+(d<0?-d:0))/k}return l===0?100:100-100/(1+g/l)}
+function metrics(a){const n=a.length,c=a.map(x=>x.c),L=a[n-1];const sma=(k,off=0)=>n-off>=k?c.slice(n-off-k,n-off).reduce((s,x)=>s+x,0)/k:null;
+const m={n,L,close:L.c,chg:(L.c/L.p-1)*100,sma20:sma(20),sma50:sma(50),sma20b:sma(20,5),sma200:sma(200)};
+m.rsi=rsi(c.slice(-120));
+if(n>=14){let s=0;for(let i=n-14;i<n;i++){const x=a[i];s+=Math.max(x.h-x.l,Math.abs(x.h-x.p),Math.abs(x.l-x.p))}m.atr=s/14;m.atrp=m.atr/L.c*100}
+m.ret5=n>5?(L.c/a[n-6].c-1)*100:null;m.ret20=n>20?(L.c/a[n-21].c-1)*100:null;
+m.lo10=Math.min(...a.slice(-10).map(x=>x.l));m.hi20=Math.max(...a.slice(-20).map(x=>x.h));
+const y=a.slice(-250);m.hi52=Math.max(...y.map(x=>x.h));m.lo52=Math.min(...y.map(x=>x.l));m.ydays=y.length;
+const w20=a.slice(-20);m.avgVal=w20.reduce((s,x)=>s+x.c*x.v,0)/w20.length/1e7;m.avgVol=w20.reduce((s,x)=>s+x.v,0)/w20.length;
+const pv=a.slice(-21,-1);m.volRatio=pv.length&&L.v?L.v/(pv.reduce((s,x)=>s+x.v,0)/pv.length):null;
+m.dnC20=w20.filter(x=>circ(x)===-1).length;m.lastC=circ(L);m.ext=m.sma20?(L.c/m.sma20-1)*100:null;return m}
+function plan(m,E){const atr=m.atr||E*.03;let sl=Math.max(m.lo10*.99,E-2*atr);sl=Math.min(sl,E*.985);const R=E-sl;return{E,sl,R,slp:R/E*100,t:[1.5,2,3].map(k=>E+k*R)}}
+/* ================= ખરીદ ચેકલિસ્ટ ================= */
+function buyEval(m,E,pl){const ck=[];const add=(t,x,w)=>ck.push({t,x,w:!!w});
+if(m.avgVal<1)add('r','રોજનું સરેરાશ turnover ફક્ત '+m.avgVal.toFixed(2)+' Cr — ખૂબ ઓછું, નીકળવું મુશ્કેલ પડે');
+else if(m.avgVal<2)add('y','રોજનું turnover '+m.avgVal.toFixed(2)+' Cr — પાતળું, qty નાનું રાખો');else add('g','રોજનું turnover '+m.avgVal.toFixed(1)+' Cr — liquidity ઠીક');
+if(m.L.z===2)add('r','Series BZ (નિયમ-ઉલ્લંઘન/સસ્પેન્શન જોખમ) — ટાળો');else if(m.L.z===1)add('y','Series BE (trade-to-trade): ફક્ત delivery, intraday નહીં, circuit વધુ');
+if(m.lastC===-1)add('r','છેલ્લા દિવસે lower circuit લાગ્યું — વેચનાર વધારે, ખરીદી જોખમી');
+if(m.dnC20>=2)add('r','છેલ્લા 20 દિવસમાં '+m.dnC20+' વાર lower circuit જેવો દિવસ');
+const down=m.sma20&&m.close<m.sma20&&(m.sma50?m.close<m.sma50:true)&&m.sma20b&&m.sma20<m.sma20b;
+if(down)add('r','Downtrend: ભાવ SMA20 ('+fm(m.sma20)+')'+(m.sma50?' અને SMA50 ('+fm(m.sma50)+')':'')+' નીચે અને SMA20 ઘટી રહી છે');
+else if(m.sma20&&m.close<m.sma20)add('y','ભાવ SMA20 ('+fm(m.sma20)+') નીચે — trend નબળો',1);
+else if(m.sma20&&m.sma50&&m.close>m.sma20&&m.sma20>m.sma50)add('g','Uptrend: ભાવ > SMA20 > SMA50');
+else if(m.sma20&&m.close>m.sma20)add('g','ભાવ SMA20 ('+fm(m.sma20)+') ઉપર છે'+(m.sma50?'':' (SMA50 માટે ડેટા ઓછો)'));
+if(m.rsi!=null){if(m.rsi>72)add('y','RSI '+m.rsi.toFixed(0)+' — વધુ પડતો ગરમ (overbought)',1);else if(m.rsi<35)add('y','RSI '+m.rsi.toFixed(0)+' — ખૂબ નબળો',0);else if(m.rsi>=45)add('g','RSI '+m.rsi.toFixed(0)+' — સ્વસ્થ ગતિ');else add('y','RSI '+m.rsi.toFixed(0)+' — ગતિ નબળી',0)}
+if(m.ext!=null&&m.ext>12)add('y','ભાવ SMA20 થી '+m.ext.toFixed(1)+'% ઉપર — દોડી ગયેલો (પીછો ન કરો)',1);else if(m.ext!=null&&m.ext>=0&&m.ext<=8)add('g','SMA20 થી '+m.ext.toFixed(1)+'% ઉપર — ખરીદ ઝોન નજીક');
+if(m.chg>7||m.lastC===1)add('y','છેલ્લા દિવસે '+pc(m.chg)+(m.lastC===1?' (upper circuit જેવું)':'')+' — એક દિવસના ઉછાળા પછી પીછો ન કરો, કાલનો open જુઓ',1);
+if(m.ret5!=null&&m.ret5>15)add('y','5 દિવસમાં '+pc(m.ret5)+' — ઝડપી ઉછાળો',1);
+if(m.volRatio!=null&&m.volRatio>3&&m.chg>0)add('y','Volume સામાન્યથી '+m.volRatio.toFixed(1)+' ગણું — સમાચાર/operator હલચલ હોઈ શકે',1);else if(m.volRatio!=null&&m.volRatio>=1&&m.chg>=0)add('g','Volume સામાન્યથી '+m.volRatio.toFixed(1)+' ગણું — ટેકો');
+if(m.atrp!=null&&m.atrp>6)add('y','રોજની સરેરાશ ચાલ (ATR) '+m.atrp.toFixed(1)+'% — બહુ અસ્થિર, qty નાનું');
+if(pl.slp>10)add('y','Stop-loss '+pl.slp.toFixed(1)+'% દૂર — જોખમ મોટું, qty ઘટાડો');
+const reds=ck.filter(x=>x.t==='r').length,waits=ck.filter(x=>x.t==='y'&&x.w).length,greens=ck.filter(x=>x.t==='g').length;
+let v='buy';if(reds)v='avoid';else if(waits||greens<3)v='wait';return{ck,v,reds,waits,greens}}
+function qtyAdvice(m,pl,S,qty){const o={liq:Math.floor(m.avgVol*.01)};const lines=[];
+if(S.cap>0){o.risk=Math.floor(S.cap*S.risk/100/pl.R);o.cap=Math.floor(S.cap*S.maxp/100/pl.E);const arr=[['liquidity (રોજના volume ના 1%)',o.liq],['જોખમ ('+S.risk+'% મૂડી)',o.risk],['મહત્તમ '+S.maxp+'% મૂડી',o.cap]];arr.sort((a,b)=>a[1]-b[1]);o.rec=Math.max(0,arr[0][1]);o.bind=arr[0][0]}
+else{o.rec=null}
+return o}
+let LASTB=null;
+function againLines(ev,m){const w=[],has=t=>ev.ck.some(x=>x.x.includes(t));
+if(has('Downtrend')||has('trend નબળો'))w.push('ભાવ SMA20 ('+fm(m.sma20)+') ઉપર સતત 2 દિવસ બંધ આવે ત્યારે ફરી જુઓ.');
+if(has('દોડી ગયેલો')||has('overbought')||has('ઉછાળો')||has('પીછો')||has('Volume સામાન્યથી'))w.push('ભાવ પાછો SMA20 ('+fm(m.sma20)+') ની નજીક (≈ '+fm(m.sma20*1.04)+' સુધી) આવે અથવા 3-5 દિવસ બાજુમાં (sideways) રહે ત્યારે ફરી જુઓ.');
+if(has('turnover'))w.push('રોજનું turnover 2 Cr થી ઉપર થાય ત્યારે, અથવા ફક્ત નાનું qty.');
+if(!w.length)w.push('સંકેત સ્પષ્ટ નથી — ભાવ SMA20 ઉપર અને RSI 45-70 વચ્ચે ટકે ત્યાં સુધી રાહ જુઓ.');return w}
+function buyTomorrow(ev,m,pl,E,q){if(ev.v==='buy')return 'કાલે open '+fm(E*1.02)+' સુધી ખુલે તો લઈ શકાય'+(q&&q.rec!=null?' (વધુમાં વધુ '+q.rec.toLocaleString('en-IN')+' શેર)':'')+'. આથી ઉપર ખુલે તો પીછો ન કરો. લીધા પછી stop '+fm(pl.sl)+'.';
+return 'કાલે લેવું નહીં. '+againLines(ev,m).join(' ')}
+function buyLadder(m,ev,pl,E,custom){const r=[],hot=ev.ck.some(x=>x.t==='y'&&x.w&&/દોડી|overbought|ઉછાળો|પીછો|Volume/.test(x.x)),weak=ev.ck.some(x=>/Downtrend|trend નબળો/.test(x.x));
+if(ev.v==='buy'){r.push({p:E*1.02,x:'આ ભાવથી ઉપર ખુલે તો પીછો ન કરો, રાહ જુઓ',c:'y'});r.push({p:E,x:custom?'તમારો ભાવ':'છેલ્લો close',c:'n'});if(m.sma20&&m.sma20<E)r.push({p:Math.max(m.sma20,E*.97),x:'આ ભાવ સુધી ઘટે તો વધુ સારો (સસ્તો) entry',c:'g'});r.push({p:pl.sl,x:'લીધા પછી stop: આ નીચે બંધ → વેચો',c:'r'})}
+else{r.push({p:m.close,x:'છેલ્લો close',c:'n'});if(m.sma20){if(hot){r.push({p:m.sma20*1.04,x:'આ ભાવ કે નીચે આવે ત્યારે ફરી તપાસો (લેવાનો ઝોન શરૂ)',c:'g'});r.push({p:m.sma20,x:'SMA20: ટેકો. આ નીચે બંધ → ઝોન ગયો',c:'y'})}else r.push({p:m.sma20,x:'આ ઉપર સતત 2 દિવસ બંધ આવે → ફરી તપાસો',c:'g'})}
+r.push({p:pl.sl,x:'(જો લો તો) stop આ ભાવે',c:'r'})}
+return r.sort((a,b)=>b.p-a.p)}
+window.watchFromBuy=()=>{if(!LASTB)return;addWatch(LASTB.sym,LASTB.qty,LASTB.px?LASTB.E:0)};
+window.holdFromBuy=()=>{if(!LASTB)return;const p=prompt('તમે કયા ભાવે લીધું? ₹',LASTB.E.toFixed(2));if(p===null)return;const q=prompt('કેટલા શેર?',LASTB.qty||'');if(q===null)return;addHold(LASTB.sym,+p,+q,todayS())};
+function renderBuy(sym,qty,pxIn,raw){const out=$('bOut');if(!DAYS.length){out.innerHTML='<div class="verdict nd"><b>ડેટા નથી</b><span>પહેલા "📂 ડેટા" ટેબમાં Bhavcopy ઉમેરો.</span></div>';return}
+const a=series(sym);if(!a.length){out.innerHTML='<div class="verdict nd"><b>'+sym+' ડેટામાં નથી</b><span>NSE code ફરી તપાસો (EQ/BE series). SME, નવો લિસ્ટિંગ કે ખોટા spelling હોઈ શકે.</span></div>'+sugg(sym,raw);return}
+const lastDay=DAYS[DAYS.length-1].k;if(a[a.length-1].d!==lastDay){out.innerHTML='<div class="verdict avoid"><b>'+sym+' છેલ્લા દિવસે trade થયો નથી</b><span>છેલ્લો ડેટા '+dmy(a[a.length-1].d)+' (ડેટાનો છેલ્લો દિવસ '+dmy(lastDay)+'). Suspend/delist/T2T ફેરફાર હોઈ શકે — NSE પર તપાસો.</span></div>';return}
+if(a.length<20){out.innerHTML='<div class="verdict nd"><b>ડેટા ઓછો ('+a.length+' દિવસ)</b><span>આ શેરનો ડેટા ફક્ત '+a.length+' દિવસનો છે. નવો લિસ્ટ થયેલો શેર હોઈ શકે, અથવા NSE code ખોટો હોઈ શકે. ઓછામાં ઓછા 20 દિવસ જોઈએ, સારું 60+.</span></div>'+sugg(sym,raw);return}
+const m=metrics(a),E=pxIn>0?pxIn:m.close,pl=plan(m,E),ev=buyEval(m,E,pl),S=getSet(),q=qtyAdvice(m,pl,S,qty);
+const T={buy:['✅ લઈ શકાય (ચેકલિસ્ટ મુજબ)','બધા મુખ્ય નિયમો પાસ. Stop-loss સાથે અને નીચેના qty માં જ.'],wait:['⏳ રાહ જુઓ','હમણાં ભાવ/સંકેત આદર્શ નથી. નીચે ક્યારે ફરી જોવું તે લખ્યું છે.'],avoid:['❌ હમણાં ન લો','ગંભીર જોખમ સંકેત છે. નીચેની લાલ લીટીઓ જુઓ.']}[ev.v];
+let h='<div class="verdict '+ev.v+'">'+(nameOf(sym)?'<div class="nm">'+nameOf(sym)+'</div>':'')+'<b>'+sym+': '+T[0]+'</b><span>'+T[1]+'</span></div>';
+h+='<div class="tom"><b>📅 કાલની કાર્યવાહી</b> '+buyTomorrow(ev,m,pl,E,q)+'</div>';
+h+='<div class="card"><h2>📊 સ્થિતિ ('+dmy(m.L.d)+')</h2><div class="grid"><div>છેલ્લો close<b>'+fm(m.close)+'</b>'+pc(m.chg)+'</div><div>SMA20 / SMA50<b>'+(m.sma20?fm(m.sma20):'—')+'</b>'+(m.sma50?fm(m.sma50):'ડેટા ઓછો')+'</div><div>RSI(14)<b>'+(m.rsi!=null?m.rsi.toFixed(0):'—')+'</b>ATR '+(m.atrp!=null?m.atrp.toFixed(1)+'%':'—')+'</div><div>5 / 20 દિવસ<b>'+(m.ret5!=null?pc(m.ret5):'—')+'</b>'+(m.ret20!=null?pc(m.ret20):'—')+'</div><div>'+m.ydays+' દિવસ ઊંચો/નીચો<b>'+fm(m.hi52)+'</b>'+fm(m.lo52)+'</div><div>Turnover/દિ<b>'+m.avgVal.toFixed(1)+' Cr</b>Series '+SERN[m.L.z]+'</div></div>';
+h+=reasonsHtml(ev.ck.filter(x=>x.t==='g').map(x=>x.x),ev.ck.filter(x=>x.t!=='g').map(x=>(x.t==='r'?'✖ ':'⚠ ')+x.x),'✔ કેમ લેવાય','⚠ કેમ ન લેવાય / રાહ')+'</div>';
+h+='<div class="card"><h2>🎯 '+(ev.v==='buy'?'પ્લાન':'જો લો તો પ્લાન')+'</h2><div class="lv"><div class="e">Entry ભાવ<b>'+fm(E)+'</b>'+(pxIn>0?'તમારો ભાવ':'છેલ્લો close')+'</div><div class="s">Stop-loss<b>'+fm(pl.sl)+'</b>−'+pl.slp.toFixed(1)+'% (10-દિવસ low / 2×ATR)</div></div><div class="lv" style="grid-template-columns:1fr 1fr 1fr">'+pl.t.map((x,i)=>'<div class="t">Target '+(i+1)+' <small>('+['1.5','2','3'][i]+'R)</small><b>'+fm(x)+'</b>'+pc((x/E-1)*100)+'</div>').join('')+'</div><div class="note">Target 1 પર અડધું બુક કરી stop-loss ખરીદ ભાવ પર લાવવાનું સામાન્ય નિયમ છે. 1R = Entry − Stop-loss = '+fm(pl.R)+' પ્રતિ શેર.</div><div class="note" style="margin:8px 0 2px"><b>📍 કયા ભાવે શું કરવું</b></div>'+ladderHtml(buyLadder(m,ev,pl,E,pxIn>0));
+h+='<div class="qty"><b>📦 Qty</b>';
+if(qty>0){const val=qty*E,rk=qty*pl.R;h+='<p>તમારું '+qty.toLocaleString('en-IN')+' શેર = '+fm(val)+' · જો stop-loss લાગે તો નુકસાન ≈ '+fm(rk)+(S.cap>0?' ('+(rk/S.cap*100).toFixed(2)+'% મૂડી, રોકાણ '+(val/S.cap*100).toFixed(1)+'% મૂડી)':'')+'</p>';
+const lp=qty/m.avgVol*100;h+='<p>રોજના સરેરાશ volume ના '+lp.toFixed(2)+'% '+(lp>1?'⚠ વધારે — ભાવ પર અસર/exit મુશ્કેલ, ટુકડામાં લો':'✔ ઠીક')+'</p>'}
+else h+='<p>qty લખ્યું નથી. દર 100 શેરે stop-loss નું જોખમ ≈ '+fm(100*pl.R)+'.</p>';
+if(ev.v==='avoid')h+='<p>❌ હમણાં ન લેવાની સલાહ છે, એટલે qty સલાહ આપી નથી.</p>';
+else if(q.rec!=null){h+='<p><b>સલાહ: વધુમાં વધુ '+q.rec.toLocaleString('en-IN')+' શેર</b> ('+q.bind+' મર્યાદા)</p>';
+if(qty>0){h+='<p>'+(qty>q.rec?'⚠ તમારું qty વધારે છે — ઘટાડીને ≤ '+q.rec.toLocaleString('en-IN')+' રાખો':(qty<q.rec*.5?'ℹ️ તમારું qty સલાહ કરતાં ઘણું ઓછું છે, ઇચ્છો તો વધારી શકો':'✔ તમારું qty મર્યાદામાં છે'))+'</p>'}}
+else h+='<p class="note">મૂડી (⚙️ સેટિંગ) નાખશો તો જોખમ આધારિત qty સલાહ પણ મળશે. Liquidity મર્યાદા: '+q.liq.toLocaleString('en-IN')+' શેર (રોજના volume ના 1%).</p>';
+if(ev.v==='buy'&&ev.ck.some(x=>x.t==='y'))h+='<p class="note">⚠ પીળી લીટીઓ છે — qty સલાહ કરતાં થોડું ઓછું રાખવું વધુ સલામત.</p>';
+h+='</div></div>';
+if(ev.v!=='buy')h+='<div class="again"><b>🔔 ફરી ક્યારે જોવું</b><br>'+againLines(ev,m).join('<br>')+'</div>';
+LASTB={sym,qty,E,px:pxIn>0};h+='<div class="yb" style="margin-top:10px"><button class="sm" onclick="watchFromBuy()">📌 Watchlist માં ઉમેરો</button><button class="sm grn" onclick="holdFromBuy()">💼 લઈ લીધું → મારા શેરમાં</button><button class="sm" onclick="copyOut(\'bOut\')">📋 કૉપી</button></div>';out.innerHTML=h}
+/* ================= Exit મદદ ================= */
+function analyze(sym){if(!DAYS.length)return{err:1,head:'ડેટા નથી',msg:'પહેલા "📂 ડેટા" ટેબમાં Bhavcopy ઉમેરો.'};
+const a=series(sym);if(!a.length)return{err:1,head:sym+' ડેટામાં નથી',msg:'NSE code તપાસો (EQ/BE series). SME કે ખોટા spelling હોઈ શકે.'};
+const lastDay=DAYS[DAYS.length-1].k;if(a[a.length-1].d!==lastDay)return{err:1,head:'છેલ્લા દિવસે trade થયો નથી',msg:'છેલ્લો ભાવ '+dmy(a[a.length-1].d)+' (ડેટાનો છેલ્લો દિવસ '+dmy(lastDay)+'). Suspend/delist/T2T ફેરફાર તપાસો, ભાવ જૂનો છે.'};
+if(a.length<20)return{err:1,head:'ડેટા ઓછો ('+a.length+' દિવસ)',msg:'આ શેરનો ડેટા ફક્ત '+a.length+' દિવસનો છે. નવો લિસ્ટ થયેલો શેર હોઈ શકે, અથવા NSE code ખોટો હોઈ શકે.'};
+return{a,m:metrics(a)}}
+function exitEval(a,m,buy,bdate){const atr=m.atr||buy*.03,since=bdate?a.filter(x=>x.d>=bdate):[],HH=bdate?Math.max(buy,...since.map(x=>x.h)):Math.max(...a.slice(-20).map(x=>x.h)),init=buy-2*atr,trail=HH-2.5*atr,hard=Math.max(init,trail),R=buy-init;
+const pnl=(m.close/buy-1)*100,rm=(m.close-buy)/R,t1=buy+1.5*R,t2=buy+2*R,c2=a.slice(-2).map(x=>x.c),below2=!!(m.sma20&&c2.length===2&&c2.every(x=>x<m.sma20));
+let act,title,sub,tom;
+if(m.close<=hard){act='exit';title='🚪 Exit કરો (stop તૂટ્યો)';sub='છેલ્લો close '+fm(m.close)+' stop ('+fm(hard)+') ની નીચે છે.';tom='કાલે સવારે open પર જ વેચી દો. Bounce ની રાહ ન જુઓ.'}
+else if(below2){act='exit';title='🚪 Exit / મોટો ભાગ વેચો';sub='સતત 2 દિવસ SMA20 ('+fm(m.sma20)+') નીચે બંધ — trend તૂટ્યો.';tom='કાલે open પર મોટો ભાગ વેચો. થોડું રાખો તો stop '+fm(hard)+'.'}
+else if(m.lastC===-1){act='alert';title='⚠️ Lower circuit — જોખમ';sub='વેચવા ખરીદનાર ન મળે એવું બને; સમાચાર તપાસો.';tom='કાલે open જુઓ: વેચાણ શક્ય હોય તો વેચો. Circuit ખૂલે ત્યાં સુધી બીજું કંઈ ન કરો.'}
+else if(rm>=1.5||(m.rsi>78&&m.ext>15)){act='part';title='💰 અડધું બુક કરો';sub=rm>=1.5?'નફો 1.5R ('+fm(t1)+') પાર થયો.':'RSI '+m.rsi.toFixed(0)+' અને ભાવ SMA20 થી '+m.ext.toFixed(0)+'% ઉપર — નફો બુક કરવાનો વિચાર કરો.';tom='કાલે અડધા શેર વેચો. બાકીના માટે stop '+fm(Math.max(hard,buy))+' (ખરીદ ભાવ કે તેથી ઉપર) રાખો.'}
+else if(m.sma20&&m.close<m.sma20){act='caution';title='⚠️ સાવધાન';sub='ભાવ SMA20 ('+fm(m.sma20)+') નીચે બંધ થયો.';tom='કાલે પણ બંધ ભાવ SMA20 ('+fm(m.sma20)+') ઉપર ન આવે તો વેચો. Stop '+fm(hard)+'.'}
+else{act='hold';title='✅ હોલ્ડ';sub='Stop '+fm(hard)+' ઉપર ભાવ ટકે ત્યાં સુધી હોલ્ડ.';tom='કાલે કંઈ કરવાનું નથી. બંધ ભાવ '+fm(hard)+' નીચે જાય તો વેચો; '+fm(t1)+' પર અડધું બુક કરો.'}
+const keep=[],sell=[];
+if(m.close>hard)keep.push('ભાવ stop ('+fm(hard)+') થી '+((m.close/hard-1)*100).toFixed(1)+'% ઉપર — કુશન છે');else sell.push('ભાવ stop ('+fm(hard)+') ની નીચે');
+if(m.sma20){if(m.close>=m.sma20)keep.push('ભાવ SMA20 ('+fm(m.sma20)+') ઉપર — trend સલામત');else sell.push('ભાવ SMA20 ('+fm(m.sma20)+') નીચે બંધ')}
+if(below2)sell.push('સતત 2 દિવસ SMA20 નીચે બંધ');
+if(m.rsi!=null){if(m.rsi>78)sell.push('RSI '+m.rsi.toFixed(0)+' — ખૂબ ગરમ, નફો બુક કરવા યોગ્ય');else if(m.rsi>=45)keep.push('RSI '+m.rsi.toFixed(0)+' — ગતિ સ્વસ્થ');else sell.push('RSI '+m.rsi.toFixed(0)+' — ગતિ નબળી')}
+if(rm>=1.5)sell.push('નફો '+rm.toFixed(1)+'R — Target 1 પાર, અડધું બુક કરવાનો સમય');else if(pnl>0)keep.push('નફો '+pnl.toFixed(1)+'% (હજી Target 1 નથી) — ચાલવા દો');else if(m.close>hard)keep.push('નુકસાન '+pnl.toFixed(1)+'% છે પણ stop સુધી જગ્યા છે');
+if(m.lastC===-1)sell.push('Lower circuit — liquidity જોખમ');
+if(m.ret5!=null&&m.ret5<-6)sell.push('5 દિવસમાં '+pc(m.ret5)+' ઘટાડો');
+if(m.volRatio!=null&&m.volRatio>2.5&&m.chg<0)sell.push('Volume '+m.volRatio.toFixed(1)+' ગણું સાથે ઘટાડો — વેચાણ દબાણ');
+const lad=[{p:t2,x:'Target 2 (2R): બાકીનો ભાગ બુક કરવાનો વિચાર',c:'g'},{p:t1,x:'Target 1 (1.5R): અડધું બુક, stop ખરીદ ભાવ પર',c:'g'},{p:m.close,x:'છેલ્લો close',c:'n'},{p:buy,x:'તમારો ખરીદ ભાવ (break-even)',c:'n'},{p:hard,x:'Stop: આ નીચે બંધ (કે open) → તરત વેચો',c:'r'}];
+if(m.sma20)lad.push({p:m.sma20,x:'SMA20: સતત 2 દિવસ આ નીચે બંધ → વેચો (1 દિવસ = સાવધાન)',c:'y'});
+lad.sort((x,y)=>y.p-x.p);
+return{act,title,sub,tom,keep,sell,lad,hard,t1,t2,R,pnl,rm,HH,trailHard:hard===trail}}
+let LASTX=null;
+const XCLS={exit:'avoid',alert:'avoid',part:'wait',caution:'wait',hold:'buy'};
+function renderExit(sym,buy,qty,bdate,raw){const out=$('xOut');if(!(buy>0)&&DAYS.length){out.innerHTML='<div class="verdict nd"><b>ખરીદ ભાવ લખો</b></div>';return}
+const r=analyze(sym);if(r.err){out.innerHTML='<div class="verdict nd"><b>'+r.head+'</b><span>'+r.msg+'</span></div>'+((/ડેટામાં નથી|ડેટા ઓછો/.test(r.head))?sugg(sym,raw):'');return}
+const a=r.a,m=r.m,ev=exitEval(a,m,buy,bdate),cls=XCLS[ev.act];
+let h='<div class="verdict '+cls+'">'+(nameOf(sym)?'<div class="nm">'+nameOf(sym)+'</div>':'')+'<b>'+sym+': '+ev.title+'</b><span>'+ev.sub+'</span></div>';
+h+='<div class="tom"><b>📅 કાલની કાર્યવાહી</b> '+ev.tom+'</div>';
+h+='<div class="card"><h2>📊 તમારી સ્થિતિ ('+dmy(m.L.d)+')</h2><div class="grid"><div>ખરીદ → હાલ<b>'+fm(buy)+'</b>'+fm(m.close)+'</div><div>નફો/નુકસાન<b style="color:'+(ev.pnl>=0?'var(--g)':'var(--r)')+'">'+pc(ev.pnl)+'</b>'+(qty>0?fm((m.close-buy)*qty):ev.rm.toFixed(1)+'R')+'</div><div>RSI / SMA20<b>'+(m.rsi!=null?m.rsi.toFixed(0):'—')+'</b>'+(m.sma20?fm(m.sma20):'—')+'</div></div>';
+h+=reasonsHtml(ev.keep,ev.sell,'✔ કેમ રાખવું','⚠ કેમ વેચવું / સાવચેતી');
+h+='<div class="note" style="margin:8px 0 2px"><b>📍 કયા ભાવે શું કરવું</b></div>'+ladderHtml(ev.lad);
+h+='<div class="note">Stop = '+(ev.trailHard?'ઊંચો ભાવ '+fm(ev.HH)+' − 2.5×ATR':'ખરીદ − 2×ATR')+'. Stop દરરોજ ઊંચો થઈ શકે, નીચે ક્યારેય નહીં. 1R = '+fm(ev.R)+' પ્રતિ શેર. નવો Bhavcopy ઉમેરીને રોજ ફરી તપાસો.</div></div>';
+LASTX={sym,buy,qty,bdate};
+h+='<div class="yb" style="margin-top:10px"><button class="sm grn" onclick="holdFromExit()">💼 મારા શેરમાં ઉમેરો</button><button class="sm" onclick="copyOut(\'xOut\')">📋 કૉપી</button></div>';out.innerHTML=h}
+window.holdFromExit=()=>{if(!LASTX)return;let d=LASTX.bdate;if(!d){d=prompt('ખરીદ તારીખ (YYYY-MM-DD) — trailing stop માટે',todayS());if(d===null)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(d))d=todayS()}addHold(LASTX.sym,LASTX.buy,LASTX.qty,d)};
+/* ================= મારી યાદી ================= */
+function addHold(s,buy,qty,date){s=norm(s);if(!s||!(buy>0))return toast('NSE code અને ખરીદ ભાવ જોઈએ');const rec={s,buy:+buy,qty:+qty||0,date:date||todayS()},i=P.hold.findIndex(h=>h.s===s);if(i>=0)Object.assign(P.hold[i],rec);else P.hold.push(rec);P.watch=P.watch.filter(w=>w.s!==s);saveP();renderYadi();toast('💼 '+s+' મારા શેરમાં સેવ થયું · 📋 મારી યાદી ટેબ જુઓ')}
+function addWatch(s,qty,px){s=norm(s);if(!s)return toast('NSE code લખો');if(P.hold.some(h=>h.s===s))return toast(s+' પહેલેથી મારા શેરમાં છે');const i=P.watch.findIndex(w=>w.s===s),rec={s,qty:+qty||0,px:+px||0};if(i>=0)Object.assign(P.watch[i],rec);else P.watch.push(rec);saveP();renderYadi();toast('📌 '+s+' Watchlist માં સેવ થયું · 📋 મારી યાદી ટેબ જુઓ')}
+function track(e,act,d){if(!e.last){e.last={d,act};return}if(e.last.d<d){e.prev=e.last;e.last={d,act}}else if(e.last.d===d)e.last.act=act}
+function evalHold(h){const r=analyze(h.s);if(r.err)return{err:r};return{r,ev:exitEval(r.a,r.m,h.buy,h.date)}}
+function evalWatch(w){const r=analyze(w.s);if(r.err)return{err:r};const m=r.m,E=w.px>0?w.px:m.close,pl=plan(m,E),ev=buyEval(m,E,pl),q=qtyAdvice(m,pl,getSet(),w.qty);return{r,m,E,pl,ev,q}}
+const changedTxt=(e,d)=>e.prev&&e.last&&e.last.d===d&&e.prev.act!==e.last.act?'<div class="chg">🔔 બદલાયું: '+ACTL[e.prev.act]+' → '+ACTL[e.last.act]+' ('+dmy(e.prev.d)+' → '+dmy(e.last.d)+')</div>':'';
+function holdCard(x,d){const h=x.h,e=x.e,i=x.i,btn='<div class="yb"><button class="sm" data-a="edit" data-i="'+i+'">✏️ સુધારો</button><button class="sm red" data-a="del" data-i="'+i+'">🗑 વેચાઈ ગયું / કાઢો</button></div>';
+if(e.err)return '<div class="yc"><div class="yh"><b>'+h.s+'</b><span class="bd nd">'+e.err.head+'</span></div><div class="ys">'+e.err.msg+'</div>'+btn+'</div>';
+const ev=e.ev,m=e.r.m,cls=XCLS[ev.act];
+return '<div class="yc '+cls+'"><div class="yh"><b>'+h.s+'</b><span class="bd '+cls+'">'+ev.title.replace(/ \(.*\)$/,'')+'</span></div>'+(nameOf(h.s)?'<div class="ys">'+nameOf(h.s)+'</div>':'')
++'<div class="ys">ખરીદ '+fm(h.buy)+(h.qty?' × '+h.qty:'')+' ('+dmy(h.date)+') → હાલ '+fm(m.close)+' · <b style="color:'+(ev.pnl>=0?'var(--g)':'var(--r)')+'">'+pc(ev.pnl)+'</b>'+(h.qty>0?' ('+fm((m.close-h.buy)*h.qty)+')':'')+'</div>'
++changedTxt(h,d)+'<div class="tom" style="margin-bottom:6px"><b>📅 કાલની કાર્યવાહી</b> '+ev.tom+'</div>'
++'<details><summary>કેમ? અને કયા ભાવે શું કરવું</summary>'+reasonsHtml(ev.keep,ev.sell,'✔ કેમ રાખવું','⚠ કેમ વેચવું / સાવચેતી')+ladderHtml(ev.lad)+'</details>'+btn+'</div>'}
+function watchCard(x,d){const w=x.w,e=x.e,i=x.i,btn='<div class="yb"><button class="sm grn" data-a="took" data-i="'+i+'">✅ લઈ લીધું</button><button class="sm red" data-a="del" data-i="'+i+'">🗑 કાઢો</button></div>';
+if(e.err)return '<div class="yc"><div class="yh"><b>'+w.s+'</b><span class="bd nd">'+e.err.head+'</span></div><div class="ys">'+e.err.msg+'</div>'+btn+'</div>';
+const ev=e.ev,m=e.m,tt={buy:'✅ લઈ શકાય',wait:'⏳ રાહ જુઓ',avoid:'❌ ન લો'}[ev.v];
+return '<div class="yc '+ev.v+'"><div class="yh"><b>'+w.s+'</b><span class="bd '+ev.v+'">'+tt+'</span></div>'+(nameOf(w.s)?'<div class="ys">'+nameOf(w.s)+'</div>':'')
++'<div class="ys">છેલ્લો close '+fm(m.close)+' ('+pc(m.chg)+')'+(w.qty?' · વિચારેલા '+w.qty+' શેર':'')+(w.px>0?' · તમારો ભાવ '+fm(w.px):'')+'</div>'
++changedTxt(w,d)+'<div class="tom" style="margin-bottom:6px"><b>📅 કાલની કાર્યવાહી</b> '+buyTomorrow(ev,m,e.pl,e.E,e.q)+'</div>'
++'<details><summary>કેમ? અને કયા ભાવે શું કરવું</summary>'+reasonsHtml(ev.ck.filter(c=>c.t==='g').map(c=>c.x),ev.ck.filter(c=>c.t!=='g').map(c=>(c.t==='r'?'✖ ':'⚠ ')+c.x),'✔ કેમ લેવાય','⚠ કેમ ન લેવાય / રાહ')+ladderHtml(buyLadder(m,ev,e.pl,e.E,w.px>0))+(e.q.rec!=null&&ev.v!=='avoid'?'<div class="note">📦 સલાહ મુજબ વધુમાં વધુ '+e.q.rec.toLocaleString('en-IN')+' શેર ('+e.q.bind+')</div>':'')+'</details>'+btn+'</div>'}
+function renderYadi(){const sm=$('ySum');if(!sm)return;const d=DAYS.length?DAYS[DAYS.length-1].k:'',NOD={err:{head:'ડેટા નથી',msg:'"📂 ડેટા" ટેબમાં Bhavcopy ઉમેરો.'}};
+const hs=P.hold.map((h,i)=>({h,i,e:d?evalHold(h):NOD})),ws=P.watch.map((w,i)=>({w,i,e:d?evalWatch(w):NOD}));
+hs.forEach(x=>{if(!x.e.err)track(x.h,x.e.ev.act,d)});ws.forEach(x=>{if(!x.e.err)track(x.w,x.e.ev.v,d)});if(hs.length||ws.length)saveP();
+const ORD={exit:0,alert:1,part:2,caution:3,hold:4},WORD={buy:0,wait:1,avoid:2};
+hs.sort((a,b)=>(a.e.err?9:ORD[a.e.ev.act])-(b.e.err?9:ORD[b.e.ev.act]));ws.sort((a,b)=>(a.e.err?9:WORD[a.e.ev.v])-(b.e.err?9:WORD[b.e.ev.v]));
+const nm=(arr,f)=>arr.filter(x=>!x.e.err&&f(x.e.ev)).map(x=>(x.h||x.w).s);
+let h='<h2>📋 આજની કાર્યવાહી</h2>';
+if(!d)h+='<p class="note">પહેલા "📂 ડેટા" ટેબમાં Bhavcopy ઉમેરો.</p>';
+else{const t=new Date(),ts=todayS(),gap=Math.round((new Date(ts)-new Date(d))/864e5);h+='<div class="note">📅 ડેટા '+dmy(d)+(gap>4?' · ⚠️ જૂનો છે, નવો Bhavcopy ઉમેરો':'')+'</div>';
+if(!hs.length&&!ws.length)h+='<p>યાદી ખાલી છે. ખરીદ/Exit ટેબમાંથી "ઉમેરો" દબાવો, અથવા નીચેના ફોર્મમાં શેર ઉમેરો.</p>';
+else{const sell=nm(hs,v=>v.act==='exit'),al=nm(hs,v=>v.act==='alert'||v.act==='caution'),pt=nm(hs,v=>v.act==='part'),hd=nm(hs,v=>v.act==='hold'),by=nm(ws,v=>v.v==='buy'),wt=nm(ws,v=>v.v==='wait'),av=nm(ws,v=>v.v==='avoid'),er=hs.filter(x=>x.e.err).length+ws.filter(x=>x.e.err).length;
+if(sell.length)h+='<p>🚪 <b>કાલે વેચો:</b> '+sell.join(', ')+'</p>';if(al.length)h+='<p>⚠️ <b>જોખમ/સાવધાન:</b> '+al.join(', ')+'</p>';if(pt.length)h+='<p>💰 <b>અડધું બુક:</b> '+pt.join(', ')+'</p>';if(hd.length)h+='<p>✅ <b>હોલ્ડ (કંઈ કરવાનું નથી):</b> '+hd.join(', ')+'</p>';
+if(by.length)h+='<p>🛒 <b>લેવા લાયક:</b> '+by.join(', ')+'</p>';if(wt.length)h+='<p>⏳ <b>રાહ જુઓ:</b> '+wt.join(', ')+'</p>';if(av.length)h+='<p>❌ <b>ન લો:</b> '+av.join(', ')+'</p>';if(er)h+='<p class="note">⚠️ '+er+' શેરનો ડેટા/code સમસ્યા — નીચે જુઓ.</p>'}}
+sm.innerHTML=h;
+$('yHold').innerHTML=hs.length?hs.map(x=>holdCard(x,d)).join(''):'<p class="note">હજી કોઈ શેર નથી. Exit મદદ ટેબમાં "💼 મારા શેરમાં ઉમેરો" દબાવો, અથવા ખરીદ મદદમાં "લઈ લીધું".</p>';
+$('yWatch').innerHTML=ws.length?ws.map(x=>watchCard(x,d)).join(''):'<p class="note">કોઈ નથી. ખરીદ મદદ ટેબમાં "📌 Watchlist માં ઉમેરો" દબાવો.</p>'}
+$('yHold').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i,h=P.hold[i];if(!h)return;
+if(b.dataset.a==='del'){if(confirm(h.s+' ને યાદીમાંથી કાઢવું? (વેચાઈ ગયું)')){P.hold.splice(i,1);saveP();renderYadi()}}
+else if(b.dataset.a==='edit'){const p=prompt('ખરીદ ભાવ ₹',h.buy);if(p===null)return;const q=prompt('શેર સંખ્યા',h.qty||'');if(q===null)return;const dd=prompt('ખરીદ તારીખ (YYYY-MM-DD)',h.date);if(dd===null)return;if(+p>0)h.buy=+p;h.qty=+q||0;if(/^\d{4}-\d{2}-\d{2}$/.test(dd))h.date=dd;saveP();renderYadi()}});
+$('yWatch').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.i,w=P.watch[i];if(!w)return;
+if(b.dataset.a==='del'){P.watch.splice(i,1);saveP();renderYadi()}
+else if(b.dataset.a==='took'){const p=prompt('તમે કયા ભાવે લીધું? ₹',w.px||'');if(p===null)return;const q=prompt('કેટલા શેર?',w.qty||'');if(q===null)return;addHold(w.s,+p,+q,todayS())}});
+$('yAddH').onclick=()=>addHold($('yS').value,+$('yP').value,+$('yQ').value,$('yD').value||todayS());
+$('yAddW').onclick=()=>addWatch($('yS').value,+$('yQ').value,+$('yP').value);
+$('yS').addEventListener('input',e=>fillList(norm(e.target.value)));
+$('yExp').onclick=()=>{const t=JSON.stringify(P);(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('બેકઅપ કૉપી થયું. WhatsApp/Notes માં સાચવો'),()=>{prompt('આ લખાણ કૉપી કરો',t)})};
+$('yImp').onclick=()=>{const t=prompt('બેકઅપ લખાણ અહીં paste કરો');if(!t)return;try{const x=JSON.parse(t);if(!Array.isArray(x.hold)||!Array.isArray(x.watch))throw 0;if(!confirm('હાલની યાદી બદલીને બેકઅપ મુજબ કરવી? ('+x.hold.length+' મારા શેર, '+x.watch.length+' watchlist)'))return;P=x;saveP();renderYadi();toast('પાછું આવ્યું')}catch(e){toast('બેકઅપ લખાણ સાચું નથી')}};
+window.copyOut=id=>{const t=$(id).innerText.replace(/\n{3,}/g,'\n\n').trim();(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('કૉપી થયું'),()=>{const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('કૉપી થયું')}catch(e){toast('કૉપી ન થયું')}x.remove()})};
+/* ================= સેટિંગ, ટેબ, શરૂઆત ================= */
+function getSet(){return{cap:+$('sCap').value||0,risk:+$('sRisk').value||1,maxp:+$('sMax').value||20}}
+function saveSet(){try{localStorage.setItem('bhavhelp_set',JSON.stringify({cap:$('sCap').value,risk:$('sRisk').value,maxp:$('sMax').value}))}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem('bhavhelp_set')||'{}');if(s.cap)$('sCap').value=s.cap;if(s.risk)$('sRisk').value=s.risk;if(s.maxp)$('sMax').value=s.maxp}catch(e){}
+for(const id of['sCap','sRisk','sMax'])$(id).addEventListener('change',saveSet);
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
+$('bGo').onclick=()=>{saveSet();const raw=$('bSym').value,s=norm(raw);if(!s)return toast('NSE code લખો');$('bSym').value=s;renderBuy(s,+$('bQty').value||0,+$('bPx').value||0,raw)};
+$('xGo').onclick=()=>{const raw=$('xSym').value,s=norm(raw);if(!s)return toast('NSE code લખો');$('xSym').value=s;renderExit(s,+$('xBuy').value||0,+$('xQty').value||0,$('xDate').value||'',raw)};
+for(const[o,i,g]of[['bOut','bSym','bGo'],['xOut','xSym','xGo']])$(o).addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;$(i).value=c.dataset.s;$(g).click()});
+for(const[id,b]of[['bSym','bGo'],['bQty','bGo'],['bPx','bGo'],['xSym','xGo'],['xBuy','xGo'],['xQty','xGo']])$(id).addEventListener('keydown',e=>{if(e.key==='Enter')$(b).click()});
+$('rules').innerHTML=['<li><b>❌ ન લો</b> જો: turnover 1 Cr થી ઓછું · Series BZ · છેલ્લા દિવસે lower circuit · 20 દિવસમાં 2+ lower circuit · ભાવ SMA20 અને SMA50 નીચે અને SMA20 ઘટતી.</li>','<li><b>⏳ રાહ જુઓ</b> જો: RSI > 72 · ભાવ SMA20 થી 12% થી વધુ ઉપર · છેલ્લો દિવસ +7% કે upper circuit · 5 દિવસમાં +15% · volume 3 ગણો વધુ સાથે ઉછાળો · ભાવ SMA20 નીચે · અથવા લીલા સંકેત 3 થી ઓછા.</li>','<li><b>✅ લઈ શકાય</b> જો: ઉપરનું કંઈ નથી અને ઓછામાં ઓછા 3 લીલા સંકેત (trend, RSI 45-70, SMA20 ની નજીક, volume ટેકો, liquidity).</li>','<li><b>Stop-loss</b> = 10-દિવસના low ની સહેજ નીચે અથવા Entry − 2×ATR, જે ઊંચું હોય. Targets = 1.5R, 2R, 3R.</li>','<li><b>Qty</b> = ત્રણમાંથી ઓછું: જોખમ % × મૂડી ÷ (Entry−Stop) · રોજના volume ના 1% · એક શેરમાં max % મૂડી.</li>','<li><b>📋 મારી યાદી</b>: દરેક શેરનું સ્ટેટસ નવા Bhavcopy પછી આપમેળે બદલાય છે. ગઈ વખતની સરખામણીમાં કાર્યવાહી બદલાય તો 🔔 દેખાય.</li>','<li><b>Exit</b>: Stop = max(ખરીદ − 2×ATR, ઊંચો ભાવ − 2.5×ATR). સતત 2 દિવસ SMA20 નીચે બંધ = વેચો. 1.5R પર અડધું બુક.</li>'].join('');
+(async()=>{try{await load();if(DAYS.length&&(P.hold.length||P.watch.length))showTab('yadi')}catch(e){$('dbar').className='dbar bad';$('dbar').textContent='ડેટા હબ વાંચી શકાયું નહીં: '+e.message+' (db.js એ જ ફોલ્ડરમાં છે? https લિંકથી ખોલ્યું?)'}})();
+</script></body></html>

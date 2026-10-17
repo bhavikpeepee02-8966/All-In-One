@@ -93,27 +93,30 @@ function nd(s){
  if(m=s.match(/(\d{2})([A-Za-z]{3})(20\d{2})/)){const x=MON[m[2].toUpperCase()];return x?m[3]+'-'+p2(x)+'-'+m[1]:null}
  return null;
 }
+function sp(l){if(l.indexOf('"')<0)return l.split(',');const o=[];let c='',q=false;for(let i=0;i<l.length;i++){const h=l[i];if(q){if(h==='"'){if(l[i+1]==='"'){c+='"';i++}else q=false}else c+=h}else if(h==='"')q=true;else if(h===','){o.push(c);c=''}else c+=h}o.push(c);return o}
+async function saveDay(d){await MarketDB.putDay({d:d.d,rows:d.rows});if(d.nm&&Object.keys(d.nm).length)await MarketDB.maybeNames(d.d,d.nm)}
 function parse(txt,fname){
  const L=txt.split(/\r?\n/);if(L.length<2)return null;
  const H=L[0].split(',').map(x=>x.trim().replace(/"/g,'').toUpperCase());
  const ix=(...n)=>{for(const k of n){const i=H.indexOf(k);if(i>=0)return i}return -1};
  const iS=ix('TCKRSYMB','SYMBOL'),iR=ix('SCTYSRS','SERIES'),iO=ix('OPNPRIC','OPEN'),iH=ix('HGHPRIC','HIGH'),
   iL=ix('LWPRIC','LOW'),iC=ix('CLSPRIC','CLOSE'),iP=ix('PRVSCLSGPRIC','PREVCLOSE'),
-  iV=ix('TTLTRADGVOL','TOTTRDQTY'),iT=ix('TTLTRFVAL','TOTTRDVAL'),iI=ix('ISIN'),iD=ix('TRADDT','TIMESTAMP','BIZDT');
+  iV=ix('TTLTRADGVOL','TOTTRDQTY'),iT=ix('TTLTRFVAL','TOTTRDVAL'),iI=ix('ISIN'),iN=ix('FININSTRMNM'),iD=ix('TRADDT','TIMESTAMP','BIZDT');
  if(iS<0||iC<0||iO<0||iH<0||iL<0)return null;
- const rows=[];let date=null;
+ const rows=[],nm={};let date=null;
  for(let i=1;i<L.length;i++){
   if(!L[i])continue;
-  const w=L[i].split(',');if(w.length<6)continue;
+  const w=sp(L[i]);if(w.length<6)continue;
   const se=iR>=0?w[iR].trim().replace(/"/g,'').toUpperCase():'EQ';
   if(!SER.has(se))continue;
   const c=+w[iC],o=+w[iO],h=+w[iH],l=+w[iL];
   if(!(c>0&&o>0&&h>0&&l>0))continue;
   if(!date&&iD>=0)date=nd(w[iD]);
   rows.push([w[iS].trim().replace(/"/g,'').toUpperCase(),se,o,h,l,c,iP>=0?+w[iP]||0:0,iV>=0?+w[iV]||0:0,iT>=0?+w[iT]||0:0,iI>=0?w[iI].trim().replace(/"/g,''):'']);
+  if(iN>=0&&w[iN])nm[rows[rows.length-1][0]]=w[iN].trim();
  }
  date=date||nd(fname);
- return date&&rows.length?{d:date,rows}:null;
+ return date&&rows.length?{d:date,rows,nm}:null;
 }
 
 async function render(){
@@ -162,11 +165,11 @@ $('f').onchange=async e=>{
      for(const k of Object.keys(z.files)){
       if(z.files[k].dir||!/\.csv$/i.test(k))continue;
       const d=parse(await z.files[k].async('string'),k);
-      if(d){await MarketDB.putDay(d);ok++}else bad.push(k);
+      if(d){await saveDay(d);ok++}else bad.push(k);
      }
     }else{
      const d=parse(await f.text(),f.name);
-     if(d){await MarketDB.putDay(d);ok++}else bad.push(f.name);
+     if(d){await saveDay(d);ok++}else bad.push(f.name);
     }
    }catch(err){bad.push(f.name+' ('+err.message+')')}
    await new Promise(r=>setTimeout(r));

@@ -48,6 +48,12 @@
   }
   async function addHoliday(d) { await setHolidays([...(await holidays()), d]); }
   async function removeHoliday(d) { await setHolidays((await holidays()).filter(x => x !== d)); }
+  /* કંપનીનાં નામ (સૌથી નવી તારીખની ફાઇલમાંથી) */
+  async function getNames() { await open(); return (await rq(st('meta', 'readonly').get('names'))) || null; }
+  async function maybeNames(dt, map) {
+    const cur = await getNames();
+    if (!cur || dt >= cur.d) await rq(st('meta', 'readwrite').put({ k: 'names', d: dt, map }));
+  }
   async function clear() { await open(); await rq(st('days', 'readwrite').clear()); }
 
   /* શનિ-રવિ અને રજા સિવાય ખૂટતા દિવસ (પહેલી થી છેલ્લી તારીખ વચ્ચે) */
@@ -78,5 +84,5 @@
     return d.slice(8, 10) + ' ' + M[+d.slice(5, 7) - 1] + ' ' + d.slice(0, 4);
   }
 
-  w.MarketDB = { MAX, open, dates, putDay, getDay, getAll, trim, holidays, addHoliday, removeHoliday, clear, missingDays, status, todayIST, fmt };
+  w.MarketDB = { MAX, getNames, maybeNames, open, dates, putDay, getDay, getAll, trim, holidays, addHoliday, removeHoliday, clear, missingDays, status, todayIST, fmt };
 })(window);
