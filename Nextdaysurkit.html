@@ -230,7 +230,7 @@ cp(t);};
 $('csv').onclick=()=>{if(!last||!last.out.length)return toast('પહેલા Scan કરો');const{out,C}=last,q=v=>'"'+String(v).replace(/"/g,'""')+'"';
 const H=['Date','Symbol','Close','Entry Min(-4%)','Entry Max(-2%)','T%','SL%','Hold','Score','Turnover','Circuits'];
 const rows=out.map(x=>[latest,x.s,x.r.c.toFixed(2),(x.r.c*0.96).toFixed(2),(x.r.c*0.98).toFixed(2),C.tp,C.sl,C.hold,x.sc,(x.q.t/1e7).toFixed(1),x.q.ci]);
-const t='\ufeff'+[H].concat(rows).map(r=>r.map(q).join(',')).join('\r\n'),b=new Blob([t],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='NextDay_'+latest+'.csv';document.body.appendChild(a);a.click();a.remove();toast('⬇️ CSV')};
+const t='\ufeff'+[H].concat(rows).map(r=>r.map(q).join(',')).join('\r\n'),b=0;MarketDB.saveFile('NextDay_Scan_'+latest+'.csv',t);toast('⬇️ CSV')};
 
 /* 🆕 MSP Portfolio CSV — Portfolio app માટે */
 $('csvMSP').onclick=()=>{
@@ -280,12 +280,7 @@ $('csvMSP').onclick=()=>{
  
  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
  const t='\ufeff'+[H].concat(rows).map(r=>r.map(q).join(',')).join('\r\n');
- const b=new Blob([t],{type:'text/csv;charset=utf-8'});
- const a=document.createElement('a');
- a.href=URL.createObjectURL(b);
- a.download='NextDayMarket_MSP_'+latest+'.csv';
- document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+ MarketDB.saveFile('NextDay_'+dstr.split('-').reverse().join('-')+'.csv',t);
  toast('📥 MSP CSV: '+portfolio);
 };
 

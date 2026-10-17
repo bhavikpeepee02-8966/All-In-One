@@ -76,6 +76,38 @@
     return { dates: ds, count: ds.length, first: ds[0] || null, last: ds[ds.length - 1] || null, holidays: hol, missing: missingDays(ds, hol) };
   }
 
+  /* ફાઇલ સેવ: APK માં Documents/MarketHub માં, ન ચાલે તો Share શીટ; Chrome માં સામાન્ય ડાઉનલોડ */
+  async function saveFile(name, content, mime) {
+    mime = mime || 'text/csv;charset=utf-8';
+    const C = w.Capacitor;
+    const native = !!(C && C.isNativePlatform && C.isNativePlatform() && C.Plugins && C.Plugins.Filesystem);
+    if (native) {
+      const FS = C.Plugins.Filesystem;
+      try {
+        try { await FS.requestPermissions(); } catch (e) {}
+        await FS.writeFile({ path: 'MarketHub/' + name, data: content, directory: 'DOCUMENTS', encoding: 'utf8', recursive: true });
+        alert('✅ ફાઇલ સેવ થઈ:\nDocuments/MarketHub/' + name);
+        return true;
+      } catch (e1) {
+        try {
+          const r = await FS.writeFile({ path: name, data: content, directory: 'CACHE', encoding: 'utf8' });
+          if (C.Plugins.Share) { await C.Plugins.Share.share({ title: name, url: r.uri, dialogTitle: name }); return true; }
+        } catch (e2) {
+          const m = String((e2 && e2.message) || e2);
+          if (m.toLowerCase().indexOf('cancel') !== -1) return true;
+          alert('❌ ફાઇલ સેવ ન થઈ: ' + m);
+          return false;
+        }
+      }
+    }
+    const blob = new Blob([content], { type: mime });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    return true;
+  }
+
   /* ભારતીય સમય (IST) મુજબ આજની તારીખ */
   function todayIST() { return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }); }
   function fmt(d) {
@@ -84,5 +116,5 @@
     return d.slice(8, 10) + ' ' + M[+d.slice(5, 7) - 1] + ' ' + d.slice(0, 4);
   }
 
-  w.MarketDB = { MAX, getNames, maybeNames, open, dates, putDay, getDay, getAll, trim, holidays, addHoliday, removeHoliday, clear, missingDays, status, todayIST, fmt };
+  w.MarketDB = { MAX, saveFile, getNames, maybeNames, open, dates, putDay, getDay, getAll, trim, holidays, addHoliday, removeHoliday, clear, missingDays, status, todayIST, fmt };
 })(window);

@@ -2030,12 +2030,7 @@ function exportMSPCsv(){
   }
   if(cnt===0){alert('કોઈ તૈયાર સ્ટોક નથી');return;}
   var csv=rows.map(function(row){return row.map(csvEsc).join(',');}).join('\r\n');
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url; a.download='BullFlag-Portfolios-'+nextDate+'.csv';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(url);},3000);
+  MarketDB.saveFile('BullFlag_'+nextDate+'.csv', csv);
   log('MSP CSV: '+cnt+' entry');
 }
 

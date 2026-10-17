@@ -600,25 +600,7 @@ function getLatestDate() {
   return { raw: ld, formatted: f };
 }
 
-async function saveFile(name, content) {
-  const C = window.Capacitor;
-  if (C && C.isNativePlatform && C.isNativePlatform() && C.Plugins && C.Plugins.Filesystem && C.Plugins.Share) {
-    try {
-      const w = await C.Plugins.Filesystem.writeFile({ path: name, data: content, directory: 'CACHE', encoding: 'utf8' });
-      await C.Plugins.Share.share({ title: name, url: w.uri, dialogTitle: name });
-      return true;
-    } catch (e) {
-      const m = String((e && e.message) || e);
-      if (m.toLowerCase().indexOf('cancel') !== -1) return true;
-      alert('❌ ' + m); return false;
-    }
-  }
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob); link.download = name;
-  link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
-  return true;
-}
+async function saveFile(name, content) { return MarketDB.saveFile(name, content); }
 function openNse(sym) {
   const url = 'https://www.nseindia.com/get-quotes/equity?symbol=' + encodeURIComponent(sym);
   const C = window.Capacitor;
@@ -646,7 +628,7 @@ async function exportPortfolio() {
     csv += `"${id}","${ns}","${s.sym}","","NSI","${portfolioName}","INR","","","","","","","","","","","${note}",""\n`; id++;
     csv += `"${id}","${ns}","${s.sym}","","NSI","${portfolioName}","INR","1","${s.confirmAbove.toFixed(2)}","0","${gd}","${ts}","","","Buy","","","${note}",""\n`; id++;
   });
-  await saveFile('MSP-Portfolios-' + nextDay.getFullYear() + '-' + pad2(nextDay.getMonth()+1) + '-' + pad2(nextDay.getDate()) + '.csv', csv);
+  await saveFile('NSC_' + nextDay.getFullYear() + '-' + pad2(nextDay.getMonth()+1) + '-' + pad2(nextDay.getDate()) + '.csv', csv);
   alert((fb ? '⚠️ Strong કોઈ નથી.\n\n' : '✅ ' + list.length + ' Strong!\n\n') + '📅 ' + ds);
 }
 
